@@ -1,0 +1,46 @@
+name: Testnet CI
+
+on:
+  push:
+    branches:
+      - testnet
+  pull_request:
+    branches:
+      - testnet
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    environment: testnet
+
+    strategy:
+      matrix:
+        node-version: ['20.x']
+
+    env:
+      RPC_URL: ${{ secrets.RPC_URL }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+
+    steps:      
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Yarn
+        run: npm install --global yarn
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Compile
+        run: yarn run compile
+
+      - name: Run Tests
+        run: yarn run test
+
+      - name: Run Deploy
+        run: yarn run deploy --network testnet

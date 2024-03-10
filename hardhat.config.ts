@@ -6,6 +6,10 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
+const RPC_URL = process.env.RPC_URL;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
+
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.24",
@@ -17,25 +21,33 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    test: {
-      url: process.env.TEST_RPC_URL,
-      accounts: [process.env.PRIVATE_KEY || ""],
+    mainnet: {
+      chainId: 295, // hedera mainnet chainId
+      url: RPC_URL,
+      accounts: [PRIVATE_KEY || ""],
     },
-    main: {
-      url: process.env.MAIN_RPC_URL,
-      accounts: [process.env.MAIN_PRIVATE_KEY || ""],
+    testnet: {
+      chainId: 296, // hedera testnet chainId
+      url: RPC_URL,
+      accounts: [PRIVATE_KEY || ""],
+    },
+    previewnet: {
+      chainId: 297, // hedera previewnet chainId
+      url: RPC_URL,
+      accounts: [PRIVATE_KEY || ""],
     },
     hardhat: {
+      chainId: 31337,
       gas: 1800000,
-      forking: {
-        url: process.env.TEST_RPC_URL || "",
-      },
+      // forking: {
+      //   url: process.env.RPC_URL || "",
+      // },
     },
-  },
+  },  
   gasReporter: {
     enabled: true,
     currency: "USD",
-    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
+    coinmarketcap: COINMARKETCAP_API_KEY,
   },
   mocha: {
     timeout: 100000000,
