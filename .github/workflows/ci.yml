@@ -43,11 +43,11 @@ jobs:
           mkdir -p data/abis
           cp artifacts/contracts/**/*.json data/abis/
           
-      - name: Get release ID
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+#      - name: Get release ID
+#        id: get_release
+#        uses: bruceadams/get-release@v1.3.2
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
       - name: Upload ABI
         uses: svenstaro/upload-release-action@v2
         with:
