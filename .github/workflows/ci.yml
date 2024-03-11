@@ -49,13 +49,12 @@ jobs:
 #        env:
 #          GITHUB_TOKEN: ${{ github.token }}
       - name: Upload ABI
-        uses: svenstaro/upload-release-action@v2
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./data/abis/*.json
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+          commit_options: '--no-verify --signoff'
+ #         repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file_pattern: './data/abis/*.json'
+
 
           
 #      - name: Commit and push if there are changes
