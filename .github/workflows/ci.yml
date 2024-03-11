@@ -41,5 +41,18 @@ jobs:
       - name: Run Tests
         run: yarn run test
 
+      - name: Extract and publish ABIs
+        run: |
+          mkdir -p data/abis
+          cp artifacts/contracts/**/*.json data/abis/
+
+      - name: Commit and push if there are changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add data/abis/
+          git commit -m "Update ABIs" -a || echo "No changes to commit."
+          git push
+
       - name: Run Deploy
         run: yarn run deploy --network testnet #change to mainnet before production
