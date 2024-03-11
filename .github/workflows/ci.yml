@@ -42,15 +42,29 @@ jobs:
         run: |
           mkdir -p data/abis
           cp artifacts/contracts/**/*.json data/abis/
-
-      - name: Commit and push if there are changes
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add data/abis/
-          git commit -m "Update ABIs" -a || echo "No changes to commit."
-          git pull
-          git push
+          
+      - name: Get release ID
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload ABI
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./data/abis/*.json
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+          
+#      - name: Commit and push if there are changes
+#        run: |
+#          git config --global user.name 'github-actions'
+#          git config --global user.email 'github-actions@github.com'
+#          git add data/abis/
+#          git commit -m "Update ABIs" -a || echo "No changes to commit."
+#          git pull
+#          git push
 
       - name: Run Deploy
         run: yarn run deploy --network testnet #change to mainnet before production
