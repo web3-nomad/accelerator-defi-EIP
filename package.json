@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "yarn hardhat compile",
     "test": "yarn hardhat test",
-    "deploy": "yarn hardhat run scripts/deploy.js"
+    "deploy": "yarn hardhat run scripts/deploy.ts"
   },
   "keywords": [
     "defi",
