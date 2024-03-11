@@ -1,17 +1,17 @@
-name: Testnet CI
+name: CI
 
 on:
   push:
     branches:
-      - testnet
+      - main
   pull_request:
     branches:
-      - testnet
+      - main
 
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
-    environment: testnet
+    environment: testnet #change to mainnet before production
 
     strategy:
       matrix:
@@ -42,4 +42,4 @@ jobs:
         run: yarn run test
 
       - name: Run Deploy
-        run: yarn run deploy --network testnet
+        run: yarn run deploy --network testnet #change to mainnet before production
