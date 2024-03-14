@@ -20,6 +20,7 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  defaultNetwork: "testnet",
   networks: {
     mainnet: {
       chainId: 295, // hedera mainnet chainId
@@ -37,13 +38,12 @@ const config: HardhatUserConfig = {
       accounts: [PRIVATE_KEY || ""],
     },
     hardhat: {
-      chainId: 31337,
       gas: 1800000,
-      // forking: {
-      //   url: process.env.RPC_URL || "",
-      // },
+      forking: {
+        url: process.env.RPC_URL || "",
+      },
     },
-  },  
+  },
   gasReporter: {
     enabled: true,
     currency: "USD",
