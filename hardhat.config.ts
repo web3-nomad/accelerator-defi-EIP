@@ -12,11 +12,11 @@ const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.24",
+    version: '0.8.17',
     settings: {
       optimizer: {
         enabled: true,
-        runs: 100,
+        runs: 200,
       },
     },
   },
@@ -30,7 +30,9 @@ const config: HardhatUserConfig = {
     testnet: {
       chainId: 296, // hedera testnet chainId
       url: RPC_URL,
-      accounts: [PRIVATE_KEY || ""],
+      accounts: [ PRIVATE_KEY || "" ],
+      timeout: 200000000,
+      allowUnlimitedContractSize: true,
     },
     previewnet: {
       chainId: 297, // hedera previewnet chainId
@@ -38,10 +40,11 @@ const config: HardhatUserConfig = {
       accounts: [PRIVATE_KEY || ""],
     },
     hardhat: {
-      gas: 1800000,
-      forking: {
-        url: process.env.RPC_URL || "",
-      },
+      gas: 8800000,
+      allowUnlimitedContractSize: true,
+      // forking: {
+      //   url: process.env.RPC_URL || "",
+      // },
     },
   },
   gasReporter: {
