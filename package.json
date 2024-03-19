@@ -46,7 +46,8 @@
   },
   "dependencies": {
     "@hashgraph/hedera-local": "^2.19.1",
-    "@openzeppelin/contracts": "^5.0.2",
-    "@openzeppelin/contracts-upgradeable": "^5.0.2"
+    "@onchain-id/solidity": "^2.0.0",
+    "@openzeppelin/contracts": "^4.8.3",
+    "@openzeppelin/contracts-upgradeable": "^4.8.3"
   }
 }
