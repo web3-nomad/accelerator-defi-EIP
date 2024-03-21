@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
       accounts: [PRIVATE_KEY || ""],
     },
     hardhat: {
-      gas: 8800000,
+      gas: 30000000,
       allowUnlimitedContractSize: true,
       // forking: {
       //   url: process.env.RPC_URL || "",
@@ -51,6 +51,7 @@ const config: HardhatUserConfig = {
     enabled: true,
     currency: "USD",
     coinmarketcap: COINMARKETCAP_API_KEY,
+    token: 'HBAR'
   },
   mocha: {
     timeout: 100000000,
