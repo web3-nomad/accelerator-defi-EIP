@@ -13,8 +13,6 @@ async function deploySuite() {
   }
 
   const deployer = new ethers.Wallet(PRIVATE_KEY, ethers.provider);
-  const identityRegistryAgent = deployer;
-  const tokenAgent = deployer;
   
   const trexFactory = await ethers.getContractAt(
     'TREXFactory', 
@@ -39,8 +37,8 @@ async function deploySuite() {
       decimals: 8,
       irs: ethers.ZeroAddress,
       ONCHAINID: ethers.ZeroAddress,
-      irAgents: [identityRegistryAgent],
-      tokenAgents: [tokenAgent],
+      irAgents: [deployer],
+      tokenAgents: [deployer],
       complianceModules: [await countryAllowModule.getAddress()],
       complianceSettings: [
         new ethers.Interface(['function batchAllowCountries(uint16[] calldata countries)']).encodeFunctionData('batchAllowCountries', [
