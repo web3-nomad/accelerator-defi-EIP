@@ -43,10 +43,14 @@ jobs:
           mkdir -p data/abis
           find ./artifacts/contracts -type f -name "*.json" ! -name "*.dbg.json" -exec cp {} data/abis/ \;
 
+      - name: Git Pull
+        run: git pull
+
       - name: Upload ABI
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_options: '--no-verify --signoff'
+          push_options: '--force'
           file_pattern: './data/abis/*.json'
 
       - name: Run Deploy
