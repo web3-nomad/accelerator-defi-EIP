@@ -26,14 +26,10 @@ async function deployClaimIssuer(managementKey: string, signer: Signer) {
 
 async function deployTRex() {
   const [deployer] = await ethers.getSigners();
-  const claimIssuerSigningKey = ethers.Wallet.createRandom();
-  const aliceActionKey = ethers.Wallet.createRandom();
-
-  const tokenIssuer = new ethers.Wallet(process.env.TOKEN_ISSUER + '', ethers.provider)
-  const tokenAgent = new ethers.Wallet(process.env.TOKEN_AGENT + '', ethers.provider)
-  const claimIssuer = new ethers.Wallet(process.env.CLAIM_ISSUER + '', ethers.provider)
-  const aliceWallet = new ethers.Wallet(process.env.ALLICE_WALLET + '', ethers.provider)
-  const bobWallet = new ethers.Wallet(process.env.BOB_WALLET + '', ethers.provider)
+  
+  const claimIssuerSigningKey = deployer;
+  const tokenIssuer = deployer
+  const claimIssuer = deployer
 
   //Deploy implementations
   const claimTopicsRegistryImplementation = await ethers.deployContract('ClaimTopicsRegistry', deployer);
@@ -159,74 +155,9 @@ async function deployTRex() {
     //@ts-ignore
     .addKey(ethers.keccak256(AbiCoder.defaultAbiCoder().encode(['address'], [await claimIssuerSigningKey.getAddress()])), 3, 1);
 
-  await trustedIssuersRegistry.connect(deployer).addTrustedIssuer(await claimIssuerContract.getAddress(), claimTopics);
-  
-  //@ts-ignore
-  const aliceIdentity = await deployIdentityProxy(await identityImplementationAuthority.getAddress(), await aliceWallet.getAddress(), deployer);
-  console.log("aliceIdentity", await aliceIdentity.getAddress());
+  await trustedIssuersRegistry.connect(deployer).addTrustedIssuer(await claimIssuerContract.getAddress(), claimTopics); 
 
-  await  aliceIdentity
-    .connect(aliceWallet)
-    //@ts-ignore
-    .addKey(ethers.keccak256(AbiCoder.defaultAbiCoder().encode(['address'], [await aliceActionKey.getAddress()])), 2, 1);
-
-  //@ts-ignore
-  const bobIdentity = await deployIdentityProxy(await identityImplementationAuthority.getAddress(), await bobWallet.getAddress(), deployer);
-  console.log("bobIdentity", await bobIdentity.getAddress());
-
-  await identityRegistry.connect(deployer).addAgent(await tokenAgent.getAddress());
-
-  // await identityRegistry.connect(deployer).addAgent(await token.getAddress());
-  // console.log("addAgent done");
-
-  await identityRegistry
-    .connect(tokenAgent)
-    .batchRegisterIdentity([await aliceWallet.getAddress(), await bobWallet.getAddress()], [await aliceIdentity.getAddress(), await bobIdentity.getAddress()], [42, 666]);
-  console.log("batchRegisterIdentity done");
-
-  const claimForAlice = {
-    data: ethers.hexlify(ethers.toUtf8Bytes('Some claim public data.')),
-    issuer: await claimIssuerContract.getAddress(),
-    topic: claimTopics[0],
-    scheme: 1,
-    identity: await aliceIdentity.getAddress(),
-    signature: '',
-  };
-
-  claimForAlice.signature = await claimIssuerSigningKey.signMessage(
-    ethers.getBytes(
-      ethers.keccak256(
-        AbiCoder.defaultAbiCoder().encode(['address', 'uint256', 'bytes'], [claimForAlice.identity, claimForAlice.topic, claimForAlice.data]),
-      ),
-    ),
-  );
-
-  await aliceIdentity
-    .connect(aliceWallet)
-    //@ts-ignore
-    .addClaim(claimForAlice.topic, claimForAlice.scheme, claimForAlice.issuer, claimForAlice.signature, claimForAlice.data, '');
-
-  const claimForBob = {
-    data: ethers.hexlify(ethers.toUtf8Bytes('Some claim public data.')),
-    issuer: await claimIssuerContract.getAddress(),
-    topic: claimTopics[0],
-    scheme: 1,
-    identity: await bobIdentity.getAddress(),
-    signature: '',
-  };
-
-  claimForBob.signature = await claimIssuerSigningKey.signMessage(
-    ethers.getBytes(
-      ethers.keccak256(
-        AbiCoder.defaultAbiCoder().encode(['address', 'uint256', 'bytes'], [claimForBob.identity, claimForBob.topic, claimForBob.data]),
-      ),
-    ),
-  );
-  
-  await bobIdentity
-    .connect(bobWallet)
-    // @ts-ignore
-    .addClaim(claimForBob.topic, claimForBob.scheme, claimForBob.issuer, claimForBob.signature, claimForBob.data, '');
+  console.log('done');
 }
 
 deployTRex()
