@@ -5,7 +5,7 @@
   "author": "Swirldlabs",
   "scripts": {
     "compile": "yarn hardhat compile",
-    "test": "yarn hardhat test",
+    "test": "yarn hardhat test --network hardhat",
     "deploy": "yarn hardhat run scripts/deploy.ts",
     "deploy-suite": "yarn hardhat run scripts/deploy-suite.ts"
   },
