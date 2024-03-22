@@ -1,4 +1,4 @@
-import { expect, ethers, anyValue } from './setup';
+import { expect, ethers, anyValue } from '../setup';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { deployFullSuiteFixture } from './fixtures/deploy-full-suite.fixture';
 import { AbiCoder } from 'ethers';
