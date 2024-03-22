@@ -61,9 +61,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 
-import "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
+import "../../../onchainid/interface/IClaimIssuer.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../interface/ITrustedIssuersRegistry.sol";
 import "../storage/TIRStorage.sol";
