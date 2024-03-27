@@ -60,9 +60,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 
-import "@onchain-id/solidity/contracts/interface/IIdentity.sol";
+import "../../../onchainid/interface/IIdentity.sol";
 
 interface IIdentityRegistryStorage {
 

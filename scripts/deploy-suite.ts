@@ -1,5 +1,4 @@
 import { ethers } from "hardhat";
-import OnchainID from '@onchain-id/solidity';
 
 async function deploySuite() {
   const {
@@ -19,10 +18,12 @@ async function deploySuite() {
     TREX_FACTORY_ADDRESS
   );
   
-  const claimIssuerContractAddress = await ethers.getContractAt(
-    OnchainID.contracts.ClaimIssuer.abi, 
-    CLAIM_ISSUER_CONTRACT_ADDRESS
-  );
+  // const claimIssuerContract = await ethers.getContractAt(
+  //   OnchainID.contracts.ClaimIssuer.abi, 
+  //   CLAIM_ISSUER_CONTRACT_ADDRESS
+  // );
+
+  const claimIssuerContract = await ethers.getContractAt('ClaimIssuer', CLAIM_ISSUER_CONTRACT_ADDRESS, deployer);
 
   // TODO: add compliance module to handle specific rules of RWA R US
   // TODO: create script to deploy compliance modules
@@ -48,7 +49,7 @@ async function deploySuite() {
     },
     {
       claimTopics: [ethers.keccak256(ethers.toUtf8Bytes('DEMO_TOPIC'))],
-      issuers: [claimIssuerContractAddress],
+      issuers: [claimIssuerContract],
       issuerClaims: [[ethers.keccak256(ethers.toUtf8Bytes('DEMO_TOPIC'))]],
     },
   );

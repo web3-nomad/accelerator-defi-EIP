@@ -59,7 +59,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 
 import "../roles/AgentRole.sol";
 import "../token/IToken.sol";
@@ -76,7 +76,7 @@ import "../proxy/IdentityRegistryStorageProxy.sol";
 import "../proxy/TrustedIssuersRegistryProxy.sol";
 import "../proxy/ModularComplianceProxy.sol";
 import "./ITREXFactory.sol";
-import "@onchain-id/solidity/contracts/factory/IIdFactory.sol";
+import "../../onchainid/factory/IIdFactory.sol";
 
 
 contract TREXFactory is ITREXFactory, Ownable {

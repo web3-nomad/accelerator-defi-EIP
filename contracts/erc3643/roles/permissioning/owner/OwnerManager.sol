@@ -61,7 +61,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 
 import "../../../token/IToken.sol";
 import "../../../registry/interface/IIdentityRegistry.sol";
@@ -70,8 +70,8 @@ import "../../../registry/interface/IClaimTopicsRegistry.sol";
 import "../../../compliance/legacy/ICompliance.sol";
 import "./OwnerRoles.sol";
 import "../../AgentRole.sol";
-import "@onchain-id/solidity/contracts/interface/IIdentity.sol";
-import "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
+import "../../../../onchainid/interface/IIdentity.sol";
+import "../../../../onchainid/interface/IClaimIssuer.sol";
 
 contract OwnerManager is OwnerRoles {
     /// @dev the token that is managed by this OwnerManager Contract
