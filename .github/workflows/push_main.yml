@@ -8,10 +8,16 @@ jobs:
   exports-abi:
     name: "Export ABI's"
     runs-on: ubuntu-latest
+    environment: testnet #change to mainnet before production
 
     strategy:
       matrix:
         node-version: ['20.x']
+
+    env:
+      RPC_URL: ${{ secrets.RPC_URL }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+    
 
     steps:      
       - uses: actions/checkout@v4
@@ -20,6 +26,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Install Yarn
+        run: npm install --global yarn
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Compile
+        run: yarn run compile
       
       - name: Extract and publish ABIs
         run: |
