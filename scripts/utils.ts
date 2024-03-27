@@ -3,7 +3,7 @@ import {
     TokenType, TokenSupplyType,
 } from "@hashgraph/sdk";
 
-function getClient() {
+export function getClient() {
     // const client = Client.forName(process.env.HEDERA_NETWORK);
     const client = Client.forTestnet();
     client.setOperator(

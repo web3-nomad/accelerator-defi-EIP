@@ -1,9 +1,7 @@
 import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
-import { deployContract, createFungibleToken } from "../scripts/utils";
-import { Client, AccountId, PrivateKey, ContractFunctionParameters, TokenId } from "@hashgraph/sdk";
-import hre from "hardhat";
-import { log } from "console";
+import { createFungibleToken } from "../scripts/utils";
+import { Client, AccountId, PrivateKey } from "@hashgraph/sdk";
 
 dotenv.config();
 
@@ -12,15 +10,6 @@ async function main() {
   const network = await ethers.provider.getNetwork();
 
   console.log("Deploying contract with account:", deployer.address, "at:", network.name);
-
-  // const Token = await ethers.getContractFactory("VaultToken");
-  // const token = await Token.deploy();
-  // await token.waitForDeployment();
-
-  // const tokenAddress = await token.getAddress();
-  // console.log(tokenAddress);
-
-  // console.log("Hash token ", token.deploymentTransaction());
 
   let client = Client.forTestnet();
 
@@ -41,15 +30,11 @@ async function main() {
     operatorPrKey
   );
 
-  const a = await hre.artifacts.readArtifact("HederaVault");
-  const constructorParameters = new ContractFunctionParameters()
-    .addAddress(createERC4626!.toSolidityAddress());
-
-  const tokenAddress = "0x" + createERC4626!.toSolidityAddress();
+  const stakingTokenAddress = "0x" + createERC4626!.toSolidityAddress();
 
   const HederaVault = await ethers.getContractFactory("HederaVault");
   const hederaVault = await HederaVault.deploy(
-    tokenAddress,
+    stakingTokenAddress,
     "TST",
     "TST",
     { from: deployer.address, value: ethers.parseUnits("10", 18) }
@@ -58,15 +43,6 @@ async function main() {
   await hederaVault.waitForDeployment();
 
   console.log(await hederaVault.getAddress());
-
-  // const createERC4626Contract = await deployContract(
-  //   client,
-  //   a.bytecode,
-  //   1500000,
-  //   operatorPrKey,
-  //   constructorParameters
-  // );
-  // console.log(`- Contract created ${createERC4626Contract!.toString()} ,Contract Address ${createERC4626Contract!.toSolidityAddress()} -`);
 }
 
 main().catch((error) => {

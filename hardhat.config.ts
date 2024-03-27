@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const RPC_URL = process.env.RPC_URL;
+const RPC_URL = process.env.LOCAL_NODE_ENDPOINT;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
 
@@ -42,9 +42,9 @@ const config: HardhatUserConfig = {
     hardhat: {
       gas: 30000000,
       allowUnlimitedContractSize: true,
-      // forking: {
-      //   url: process.env.RPC_URL || "",
-      // },
+      forking: {
+        url: process.env.RPC_URL || "",
+      },
     },
   },
   gasReporter: {
