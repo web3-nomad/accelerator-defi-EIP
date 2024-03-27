@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0
 contract ClaimIssuerTrick {
     function isClaimValid(
         address _identity,
