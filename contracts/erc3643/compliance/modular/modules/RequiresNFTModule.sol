@@ -8,7 +8,6 @@ contract RequiresNFTModule is AbstractModule {
     // struct of required nfts
     struct RequiredNft {
         address nftAddress;
-        uint256 serialNumber;
     }
 
     /// required nft addresses mapping
@@ -18,34 +17,29 @@ contract RequiresNFTModule is AbstractModule {
      *  this event is emitted when a user NFT is required for transfer
      *  `_compliance` is the compliance address.
      *  `_nftAddress` is the required NFT address
-     *  `_serialNumber` is the required NFT serial number
      */
-    event NFTRequired(address _compliance, address _nftAddress, uint256 _serialNumber);
+    event NFTRequired(address _compliance, address _nftAddress);
 
     /**
      *  this event is emitted when a user NFT is removed from requirements
      *  `_compliance` is the compliance address.
-     *  `_nftAddress` is the required NFT address
-     *  `_serialNumber` is the required NFT serial number
      */
     event NFTUnrequired(address _compliance);
 
     /**
      *  @dev add an required NFT for compliance.
      *  @param _nftAddress is the address of the nft
-     *  @param _serialNumber is the serial number of the nft
      *  Only the owner of the Compliance smart contract can call this function
      *  emits an `NFTRequired` event
      */
-    function requireNFT(address _nftAddress, uint256 _serialNumber) external onlyComplianceCall {
+    function requireNFT(address _nftAddress) external onlyComplianceCall {
         require(_nftAddress != address(0), "Invalid Address");
 
         _requiredNFTs[msg.sender] = RequiredNft({
-            nftAddress: _nftAddress,
-            serialNumber: _serialNumber
+            nftAddress: _nftAddress
         });
 
-        emit NFTRequired(msg.sender, _nftAddress, _serialNumber);
+        emit NFTRequired(msg.sender, _nftAddress);
     }
 
       /**
@@ -55,8 +49,7 @@ contract RequiresNFTModule is AbstractModule {
      */
     function unrequireNFT() external onlyComplianceCall {
         _requiredNFTs[msg.sender] = RequiredNft({
-            nftAddress: address(0),
-            serialNumber: 0
+            nftAddress: address(0)
         });
 
         emit NFTUnrequired(msg.sender);
@@ -93,10 +86,10 @@ contract RequiresNFTModule is AbstractModule {
         
         if (requiredNFT.nftAddress == address(0)) return false;
 
-        address ownerOfToken = 
-            IERC721(requiredNFT.nftAddress).ownerOf(requiredNFT.serialNumber);
+        uint256 ownerOfToken = 
+            IERC721(requiredNFT.nftAddress).balanceOf(_userAddress);
 
-        return _userAddress == ownerOfToken;
+        return ownerOfToken > 0;
     }
 
     /**

@@ -70,7 +70,7 @@ describe('Compliance Module: TransferRestrict', () => {
       it('should revert', async () => {
         const context = await loadFixture(deployTransferRestrictFullSuite);
 
-        await expect(context.suite.complianceModule.requireNFT(context.accounts.aliceWallet.address, 1)).to.revertedWith(
+        await expect(context.suite.complianceModule.requireNFT(context.accounts.aliceWallet.address)).to.revertedWith(
           'only bound compliance can call',
         );
       });
@@ -81,13 +81,13 @@ describe('Compliance Module: TransferRestrict', () => {
         const context = await loadFixture(deployTransferRestrictFullSuite);
         const NFT = ethers.Wallet.createRandom();
         const tx = await context.suite.compliance.callModuleFunction(
-          new ethers.Interface(['function requireNFT(address _nftAddress, uint256 _serialNumber)']).encodeFunctionData('requireNFT', [NFT.address, 1]),
+          new ethers.Interface(['function requireNFT(address _nftAddress)']).encodeFunctionData('requireNFT', [NFT.address]),
           await context.suite.complianceModule.getAddress(),
         );
 
         await expect(tx)
           .to.emit(context.suite.complianceModule, 'NFTRequired')
-          .withArgs(await context.suite.compliance.getAddress(), NFT.address, 1);
+          .withArgs(await context.suite.compliance.getAddress(), NFT.address);
       });
     });
   });
@@ -139,7 +139,7 @@ describe('Compliance Module: TransferRestrict', () => {
         
         // require nft on compliance
         await context.suite.compliance.callModuleFunction(
-          new ethers.Interface(['function requireNFT(address _nftAddress, uint256 _serialNumber)']).encodeFunctionData('requireNFT', [NFTaddress, NFTID]),
+          new ethers.Interface(['function requireNFT(address _nftAddress)']).encodeFunctionData('requireNFT', [NFTaddress]),
           await context.suite.complianceModule.getAddress(),
         );
 
