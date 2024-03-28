@@ -47,5 +47,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_options: '--no-verify --signoff'
+          branch: main
           push_options: '--force'
           file_pattern: './data/deployments/*.json'
