@@ -37,5 +37,15 @@ jobs:
       - name: Run Tests
         run: yarn run test
 
+      - name: Create deployment folder
+        run: mkdir ./data/deployments
+
       - name: Run Deploy
         run: yarn run deploy --network testnet #change to mainnet before production
+      
+      - name: Export Contract Addresses
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_options: '--no-verify --signoff'
+          push_options: '--force'
+          file_pattern: './data/deployments/*.json'
