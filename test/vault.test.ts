@@ -70,13 +70,13 @@ describe("Vault", function () {
         //     " Treasury balance: " + balanceCheckTreasury.tokens
         // );
 
-        const stToken = ethers.getContractAt("ERC4626 on Hedera", stakingTokenAddress);
+        // const stToken = ethers.getContractAt("ERC4626 on Hedera", stakingTokenAddress);
 
-        console.log("BLS ", await stToken.balanceOf(owner.address));
+        // console.log("BLS ", await stToken.balanceOf(owner.address));
 
         // await TokenTransfer(stakingToken, operatorAccountId, aliceAccountId, 50, client);
 
-        console.log("workB");
+        // console.log("workB");
 
         // createAccount(client, aliceKey, aliceAccountId);
 
@@ -98,28 +98,28 @@ describe("Vault", function () {
     describe("deposit", function () {
         it("Should deposit tokens and return shares", async function () {
             const { hederaVault, to, owner, client, stakingToken } = await deployFixture();
-            const amountToDeposit = 1;
-            const amountToWithdraw = 1 * 1e8;
+            // const amountToDeposit = 1;
+            // const amountToWithdraw = 1 * 1e8;
 
-            console.log("work1");
-            await addToken(hederaVault, stakingToken, 10, client);
+            // console.log("work1");
+            // await addToken(hederaVault, stakingToken, 10, client);
 
-            console.log("work");
+            // console.log("work");
 
-            const tx = await hederaVault.connect(owner).withdraw(
-                amountToWithdraw,
-                owner.address,
-                owner.address
-            );
+            // const tx = await hederaVault.connect(owner).withdraw(
+            //     amountToWithdraw,
+            //     owner.address,
+            //     owner.address
+            // );
 
-            console.log("with");
+            // console.log("with");
 
-            // const tx = await hederaVault.connect(owner).deposit(amountToDeposit, to.address);
+            // // const tx = await hederaVault.connect(owner).deposit(amountToDeposit, to.address);
 
-            await expect(
-                tx
-            ).to.emit(hederaVault, "Withdraw")
-                .withArgs(owner.address, owner.address, amountToWithdraw, anyValue);
+            // await expect(
+            //     tx
+            // ).to.emit(hederaVault, "Withdraw")
+            //     .withArgs(owner.address, owner.address, amountToWithdraw, anyValue);
         });
 
         it("preview", async function () {

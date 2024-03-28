@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     testnet: {
       chainId: 296, // hedera testnet chainId
       url: RPC_URL,
-      accounts: [ PRIVATE_KEY || "" ],
+      accounts: [PRIVATE_KEY || ""],
       timeout: 200000000,
       allowUnlimitedContractSize: true,
     },
@@ -42,9 +42,9 @@ const config: HardhatUserConfig = {
     hardhat: {
       gas: 30000000,
       allowUnlimitedContractSize: true,
-      forking: {
-        url: process.env.RPC_URL || "",
-      },
+      // forking: {
+      //   url: process.env.RPC_URL || "",
+      // },
     },
   },
   gasReporter: {
