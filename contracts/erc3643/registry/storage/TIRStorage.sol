@@ -61,9 +61,9 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 
-import "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
+import "../../../onchainid/interface/IClaimIssuer.sol";
 
 contract TIRStorage {
     /// @dev Array containing all TrustedIssuers identity contract address.

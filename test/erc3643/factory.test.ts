@@ -1,6 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { expect, ethers } from './setup';
-import OnchainID from '@onchain-id/solidity';
+import { expect, ethers } from '../setup';
+// import OnchainID from '@onchain-id/solidity';
 import { deployFullSuiteFixture } from './fixtures/deploy-full-suite.fixture';
 
 describe('TREXFactory', () => {
@@ -383,9 +383,10 @@ describe('TREXFactory', () => {
           authorities: { identityImplementationAuthority },
         } = await loadFixture(deployFullSuiteFixture);
 
-        const newIdFactory = await new ethers.ContractFactory(OnchainID.contracts.Factory.abi, OnchainID.contracts.Factory.bytecode, deployer).deploy(
-          await identityImplementationAuthority.getAddress(),
-        );
+        // const newIdFactory = await new ethers.ContractFactory(OnchainID.contracts.Factory.abi, OnchainID.contracts.Factory.bytecode, deployer).deploy(
+        //   await identityImplementationAuthority.getAddress(),
+        // );
+        const newIdFactory = await ethers.deployContract('IdFactory', [await identityImplementationAuthority.getAddress()], deployer);
 
         const tx = await trexFactory.setIdFactory(await newIdFactory.getAddress());
         expect(tx).to.emit(trexFactory, 'IdFactorySet');

@@ -1,4 +1,4 @@
-import { expect, ethers } from './setup';
+import { expect, ethers } from '../setup';
 import { deployFullSuiteFixture } from './fixtures/deploy-full-suite.fixture';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 

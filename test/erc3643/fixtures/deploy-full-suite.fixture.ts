@@ -1,16 +1,17 @@
 import { Signer, AbiCoder } from 'ethers';
 import { ethers } from 'hardhat';
-import OnchainID from '@onchain-id/solidity';
-import { IIdFactory } from '../../typechain-types/';
+// import OnchainID from '@onchain-id/solidity';
 import * as dotenv from 'dotenv'
 
 dotenv.config();
 
 export async function deployIdentityProxy(implementationAuthority: string, managementKey: string, signer: Signer) {
-  const identity = await new ethers.ContractFactory(OnchainID.contracts.IdentityProxy.abi, OnchainID.contracts.IdentityProxy.bytecode, signer).deploy(
-    implementationAuthority,
-    managementKey,
-  );
+  // const identity = await new ethers.ContractFactory(OnchainID.contracts.IdentityProxy.abi, OnchainID.contracts.IdentityProxy.bytecode, signer).deploy(
+  //   implementationAuthority,
+  //   managementKey,
+  // );
+
+  const identity = await ethers.deployContract('IdentityProxy', [implementationAuthority, managementKey], signer);
 
   return ethers.getContractAt('Identity', await identity.getAddress(), signer);
 }
@@ -28,21 +29,26 @@ export async function deployFullSuiteFixture() {
   const identityRegistryImplementation = await ethers.deployContract('IdentityRegistry', deployer);
   const modularComplianceImplementation = await ethers.deployContract('ModularCompliance', deployer);
   const tokenImplementation = await ethers.deployContract('Token', deployer);
-  const identityImplementation = await new ethers.ContractFactory(
-    OnchainID.contracts.Identity.abi,
-    OnchainID.contracts.Identity.bytecode,
-    deployer,
-  ).deploy(deployer.address, true);
+  // const identityImplementation = await new ethers.ContractFactory(
+  //   OnchainID.contracts.Identity.abi,
+  //   OnchainID.contracts.Identity.bytecode,
+  //   deployer,
+  // ).deploy(deployer.address, true);
+  const identityImplementation = await ethers.deployContract('Identity', [deployer.address, true], deployer);
 
-  const identityImplementationAuthority = await new ethers.ContractFactory(
-    OnchainID.contracts.ImplementationAuthority.abi,
-    OnchainID.contracts.ImplementationAuthority.bytecode,
-    deployer,
-  ).deploy(await identityImplementation.getAddress());
+  // const identityImplementationAuthority = await new ethers.ContractFactory(
+  //   OnchainID.contracts.ImplementationAuthority.abi,
+  //   OnchainID.contracts.ImplementationAuthority.bytecode,
+  //   deployer,
+  // ).deploy(await identityImplementation.getAddress());
 
-  const identityFactory = await new ethers.ContractFactory(OnchainID.contracts.Factory.abi, OnchainID.contracts.Factory.bytecode, deployer).deploy(
-    await identityImplementationAuthority.getAddress(),
-  ) as IIdFactory;
+  const identityImplementationAuthority = await ethers.deployContract('ImplementationAuthority', [await identityImplementation.getAddress()], deployer);
+
+  // const identityFactory = await new ethers.ContractFactory(OnchainID.contracts.Factory.abi, OnchainID.contracts.Factory.bytecode, deployer).deploy(
+  //   await identityImplementationAuthority.getAddress(),
+  // ) as IIdFactory;
+
+  const identityFactory = await ethers.deployContract('IdFactory', [await identityImplementationAuthority.getAddress()], deployer);
 
   const trexImplementationAuthority = await ethers.deployContract(
     'TREXImplementationAuthority',

@@ -2,10 +2,10 @@
  *Submitted for verification at polygonscan.com on 2022-11-10
 */
 
-// File: @onchain-id/solidity/contracts/interface/IERC734Legacy.sol
+// File: ../../../onchainid/interface/IERC734Legacy.sol
 
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 
 /**
  * @dev interface of the ERC734 (Key Holder) standard as defined in the EIP.
@@ -118,7 +118,7 @@ interface IERC734Legacy {
     function removeKey(bytes32 _key, uint256 _purpose) external returns (bool success);
 }
 
-// File: @onchain-id/solidity/contracts/interface/IERC735Legacy.sol
+// File: ../../../onchainid/interface/IERC735Legacy.sol
 
 /**
  * @dev interface of the ERC735 (Claim Holder) standard as defined in the EIP.
@@ -191,13 +191,13 @@ interface IERC735Legacy {
     function removeClaim(bytes32 _claimId) external returns (bool success);
 }
 
-// File: @onchain-id/solidity/contracts/interface/LegacyIIdentity.sol
+// File: ../../../onchainid/interface/LegacyIIdentity.sol
 
 
 
 interface LegacyIIdentity is IERC734Legacy, IERC735Legacy {}
 
-// File: @onchain-id/solidity/contracts/interface/IClaimIssuerLegacy.sol
+// File: ../../../onchainid/interface/IClaimIssuerLegacy.sol
 
 
 
