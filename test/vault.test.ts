@@ -21,7 +21,7 @@ describe("Vault", function () {
         let client = Client.forTestnet();
 
         const operatorPrKey = PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY || '');
-        const operatorAccountId = AccountId.fromString(process.env.OPERATOR_ID || '');
+        const operatorAccountId = AccountId.fromString(process.env.ACCOUNT_ID || '');
 
         client.setOperator(
             operatorAccountId,

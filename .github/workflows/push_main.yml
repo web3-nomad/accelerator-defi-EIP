@@ -17,7 +17,7 @@ jobs:
     env:
       RPC_URL: ${{ secrets.RPC_URL }}
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-      ACCOUNT_ID: ${{ vars.ACCOUNT_ID }}
+      ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
 
     steps:      
       - uses: actions/checkout@v4
