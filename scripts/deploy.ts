@@ -100,7 +100,7 @@ async function deployVault(contracts: Record<string, string>): Promise<Record<st
 async function exportDeploymentVersion(contracts: Record<string, string>): Promise<Record<string, string>> {
   console.log(' - Export Deployment contract addresses...');
   const network = await ethers.provider.getNetwork();
-  const filePath = `./data/deployments/${network.name.toLowerCase()}.json`
+  const filePath = `./data/deployments/chain-${network.chainId.toString()}.json`
   const jsonData = JSON.stringify(contracts, null, 2);
   await writeFile(filePath, jsonData, 'utf-8');
   console.log(` - Deployment addresses written to ${filePath}`);
