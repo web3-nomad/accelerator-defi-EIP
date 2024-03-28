@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.24;
 pragma abicoder v2;
 
 import {ERC20} from "./ERC20.sol";

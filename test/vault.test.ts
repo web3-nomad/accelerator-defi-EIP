@@ -1,10 +1,11 @@
-import { anyValue, ethers, upgrades } from "./setup";
-import { createFungibleToken, getClient } from "../scripts/utils";
-import { PrivateKey, Client, AccountId } from "@hashgraph/sdk";
-import { expect } from "chai";
+import { anyValue, ethers, expect } from "./setup";
+import { TokenTransfer, createFungibleToken, TokenBalance, createAccount, addToken, mintToken } from "../scripts/utils";
+import { PrivateKey, Client, AccountId, TokenAssociateTransaction, AccountBalanceQuery } from "@hashgraph/sdk";
 
 // constants
 let client;
+let aliceKey;
+let aliceAccountId;
 // Tests
 describe("Vault", function () {
     async function deployFixture() {
@@ -12,12 +13,12 @@ describe("Vault", function () {
             owner,
             to,
             admin,
+            receiver,
+            sender,
             ...otherAccounts
         ] = await ethers.getSigners();
 
-        // client = getClient();
-
-        const client = Client.forTestnet();
+        let client = Client.forTestnet();
 
         const operatorPrKey = PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY || '');
         const operatorAccountId = AccountId.fromString(process.env.OPERATOR_ID || '');
@@ -27,9 +28,10 @@ describe("Vault", function () {
             operatorPrKey
         );
 
-        console.log(owner);
+        aliceKey = PrivateKey.generateED25519();
+        // aliceAccountId = await createAccount(client, aliceKey, 20);
 
-        const createERC4626 = await createFungibleToken(
+        const stakingToken = await createFungibleToken(
             "ERC4626 on Hedera",
             "HERC4626",
             process.env.OPERATOR_ID,
@@ -38,23 +40,53 @@ describe("Vault", function () {
             operatorPrKey
         );
 
-        console.log("fungible token created");
-
-        const stakingTokenAddress = "0x" + createERC4626!.toSolidityAddress();
+        const stakingTokenAddress = "0x" + stakingToken!.toSolidityAddress();
 
         const HederaVault = await ethers.getContractFactory("HederaVault");
         const hederaVault = await HederaVault.deploy(
             stakingTokenAddress,
             "TST",
             "TST",
-            { from: owner.address, value: ethers.parseUnits("25", 18) }
+            { from: owner.address, gasLimit: 3000000, value: ethers.parseUnits("10", 18) }
         );
         await hederaVault.waitForDeployment();
 
-        console.log("Vault deployed");
+        // const tokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(aliceAccountId!)
+        //     .setTokenIds([stakingToken!])
+        //     .execute(client);
+
+        // console.log("workF");
+
+        // await mintToken(stakingToken, client, 100, operatorPrKey);
+
+        console.log("token mint success");
+
+        // let balanceCheckTreasury = await new AccountBalanceQuery()
+        //     .setAccountId(operatorAccountId)
+        //     .execute(client);
+
+        // console.log(
+        //     " Treasury balance: " + balanceCheckTreasury.tokens
+        // );
+
+        const stToken = ethers.getContractAt("ERC4626 on Hedera", stakingTokenAddress);
+
+        console.log("BLS ", await stToken.balanceOf(owner.address));
+
+        // await TokenTransfer(stakingToken, operatorAccountId, aliceAccountId, 50, client);
+
+        console.log("workB");
+
+        // createAccount(client, aliceKey, aliceAccountId);
+
+        // console.log(
+        //     await TokenBalance(receiver.address, client)
+        // );
 
         return {
             hederaVault,
+            stakingToken,
             to,
             client,
             owner,
@@ -63,25 +95,32 @@ describe("Vault", function () {
         };
     }
 
-    describe("deployment", function () {
-        it("Should set the right role", async function () {
-            const { hederaVault } = await deployFixture();
-
-        });
-    });
-
     describe("deposit", function () {
-        // it("Should deposit tokens and return shares", async function () {
-        //     const { hederaVault, to, owner } = await deployFixture();
-        //     const amountToDeposit = 1;
+        it("Should deposit tokens and return shares", async function () {
+            const { hederaVault, to, owner, client, stakingToken } = await deployFixture();
+            const amountToDeposit = 1;
+            const amountToWithdraw = 1 * 1e8;
 
-        //     const tx = await hederaVault.connect(owner).deposit(amountToDeposit, to.address);
+            console.log("work1");
+            await addToken(hederaVault, stakingToken, 10, client);
 
-        //     await expect(
-        //         tx
-        //     ).to.emit(hederaVault, "Deposit")
-        //         .withArgs(owner.address, to.address, amountToDeposit, anyValue);
-        // });
+            console.log("work");
+
+            const tx = await hederaVault.connect(owner).withdraw(
+                amountToWithdraw,
+                owner.address,
+                owner.address
+            );
+
+            console.log("with");
+
+            // const tx = await hederaVault.connect(owner).deposit(amountToDeposit, to.address);
+
+            await expect(
+                tx
+            ).to.emit(hederaVault, "Withdraw")
+                .withArgs(owner.address, owner.address, amountToWithdraw, anyValue);
+        });
 
         it("preview", async function () {
             const { hederaVault, to, owner } = await deployFixture();
