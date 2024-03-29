@@ -8,7 +8,7 @@ import {IERC4626} from "./IERC4626.sol";
 import {FixedPointMathLib} from "./FixedPointMathLib.sol";
 import {SafeTransferLib} from "./SafeTransferLib.sol";
 import "../common/safe-HTS/SafeHTS.sol";
-import "../common/hedera/IHederaTokenService.sol";
+import "../common/safe-HTS/IHederaTokenService.sol";
 
 contract HederaVault is IERC4626 {
     using SafeTransferLib for ERC20;
