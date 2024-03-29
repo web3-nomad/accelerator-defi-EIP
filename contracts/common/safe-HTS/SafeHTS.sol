@@ -3,7 +3,7 @@ pragma solidity >=0.5.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 import "./HederaResponseCodes.sol";
-import "../hedera/IHederaTokenService.sol";
+import "./IHederaTokenService.sol";
 
 library SafeHTS {
     address constant precompileAddress = address(0x167);
