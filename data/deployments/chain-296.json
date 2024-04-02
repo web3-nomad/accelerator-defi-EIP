@@ -1,0 +1,22 @@
+{
+  "implementations": {
+    "Token": "0x07fb7949C8606037881Af84f569BCdb3F171CA36",
+    "ClaimTopicsRegistry": "0xbd7D63Aacb0965Fd5BFE77cE8E9E9B279c20B4E5",
+    "TrustedIssuersRegistry": "0xC38d12D7eD1CE45b576b6A4dD219510c30bbfddb",
+    "IdentityRegistryStorage": "0x49ad119E7b24D3c3Bf8356f94BEF0762E74E9D5A",
+    "IdentityRegistry": "0x883a551987Ee5895E9410DD3995A2E6555ABb733",
+    "ModularCompliance": "0x0562683F04f2D942b935AE7741e6e99f9122E591",
+    "Identity": "0x2433a54b26c33c6008AB060c40d0aE4a4a5de4A8",
+    "ImplementationAuthority": "0xe8e840070d1afd7799767B71b8C1b708B5F58702"
+  },
+  "factories": {
+    "IdFactory": "0x8C63aa9eb1566DAFa68D69F85cAa8e51175c2f82",
+    "TREXImplementationAuthority": "0xE8891d420cc36aDbfA4600d3fa1b88D5E8034E9D",
+    "TREXFactory": "0x25AC07CB223cA9eCB624c396B347654cbd53482B"
+  },
+  "compliance": {
+    "RequiresNFTModule": "0xf6A8fDB90E9CD834E9d74E0B3744BF303aA99b5c",
+    "CountryAllowModule": "0x954dbd9f366E50059a507a99DCb5974AA327901e"
+  },
+  "vault": {}
+}
