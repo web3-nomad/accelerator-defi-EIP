@@ -130,9 +130,9 @@ describe("Vault", function () {
 
         it("preview", async function () {
             const { hederaVault, to, owner } = await deployFixture();
-            const amountToDeposit = 1;
+            // const amountToDeposit = 1;
 
-            console.log(await hederaVault.connect(owner).previewMint(amountToDeposit));
+            // console.log(await hederaVault.connect(owner).previewMint(amountToDeposit));
         });
     });
 });
