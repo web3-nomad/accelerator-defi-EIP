@@ -2,13 +2,13 @@ import { ethers } from 'hardhat';
 import { writeFile } from 'fs/promises';
 
 // Initial function for logs and configs
-async function init(): Promise<Record<string, string>> {
+async function init(): Promise<Record<string, any>> {
   console.log(" - Deploying contracts...");
   return {};
 }
 
 // Deploy main contracts for the ERC3643 Standart (T-REX)
-async function deployERC3643(contracts: Record<string, string>): Promise<Record<string, string>> {
+async function deployERC3643(contracts: Record<string, any>): Promise<Record<string, any>> {
   console.log(' - Deploying ERC3643 contracts...');
   const [deployer] = await ethers.getSigners();
 
@@ -59,22 +59,26 @@ async function deployERC3643(contracts: Record<string, string>): Promise<Record<
 
   return {
     ...contracts,
-    tokenImplementation: await tokenImplementation.getAddress(),
-    claimTopicsRegistryImplementation: await claimTopicsRegistryImplementation.getAddress(),
-    trustedIssuersRegistryImplementation: await trustedIssuersRegistryImplementation.getAddress(),
-    identityRegistryStorageImplementation: await identityRegistryStorageImplementation.getAddress(),
-    identityRegistryImplementation: await identityRegistryImplementation.getAddress(),
-    modularComplianceImplementation: await modularComplianceImplementation.getAddress(),
-    identityImplementation: await identityImplementation.getAddress(),
-    identityImplementationAuthority: await identityImplementationAuthority.getAddress(),
-    identityFactory: await identityFactory.getAddress(),
-    trexImplementationAuthority: await trexImplementationAuthority.getAddress(),
-    trexFactory: await trexFactory.getAddress(),
+    implementations: {
+      Token: await tokenImplementation.getAddress(),
+      ClaimTopicsRegistry: await claimTopicsRegistryImplementation.getAddress(),
+      TrustedIssuersRegistry: await trustedIssuersRegistryImplementation.getAddress(),
+      IdentityRegistryStorage: await identityRegistryStorageImplementation.getAddress(),
+      IdentityRegistry: await identityRegistryImplementation.getAddress(),
+      ModularCompliance: await modularComplianceImplementation.getAddress(),
+      Identity: await identityImplementation.getAddress(),
+      ImplementationAuthority: await identityImplementationAuthority.getAddress(),
+    },
+    factories: {
+      IdFactory: await identityFactory.getAddress(),
+      TREXImplementationAuthority: await trexImplementationAuthority.getAddress(),
+      TREXFactory: await trexFactory.getAddress(),
+    }
   }
 
 }
 
-async function deployComplianceModules(contracts: Record<string, string>): Promise<Record<string, string>> {
+async function deployComplianceModules(contracts: Record<string, any>): Promise<Record<string, any>> {
   const [deployer] = await ethers.getSigners();
 
   // Deploy compliance Modules
@@ -83,21 +87,26 @@ async function deployComplianceModules(contracts: Record<string, string>): Promi
 
   return {
     ...contracts,
-    requiresNFTModule: await requiresNFTModule.getAddress(),
-    countryAllowModule: await countryAllowModule.getAddress(),
+    compliance: {
+      RequiresNFTModule: await requiresNFTModule.getAddress(),
+      CountryAllowModule: await countryAllowModule.getAddress(),
+    }
   }
 }
 
 // Deploy Vault contracts
-async function deployVault(contracts: Record<string, string>): Promise<Record<string, string>> {
+async function deployVault(contracts: Record<string, any>): Promise<Record<string, any>> {
   console.log(' - Deploying Vault contracts...');
   return {
-    ...contracts
+    ...contracts,
+    vault: {
+
+    }
   };
 }
 
 // creates a deployment file into data/deployments (eg: data/deployments/mainnet.json)
-async function exportDeploymentVersion(contracts: Record<string, string>): Promise<Record<string, string>> {
+async function exportDeploymentVersion(contracts: Record<string, any>): Promise<Record<string, any>> {
   console.log(' - Export Deployment contract addresses...');
   const network = await ethers.provider.getNetwork();
   const filePath = `./data/deployments/chain-${network.chainId.toString()}.json`
@@ -105,9 +114,7 @@ async function exportDeploymentVersion(contracts: Record<string, string>): Promi
   await writeFile(filePath, jsonData, 'utf-8');
   console.log(` - Deployment addresses written to ${filePath}`);
 
-  return {
-    ...contracts
-  }
+  return contracts;  
 }
 
 // Finish function
