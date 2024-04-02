@@ -26,11 +26,11 @@ describe("Vault", function () {
             operatorPrKey
         );
 
-        aliceKey = PrivateKey.generateED25519();
-        aliceAccountId = await createAccount(client, aliceKey, 20);
-        const alice = createAccount(client, aliceKey, aliceAccountId);
+        // aliceKey = PrivateKey.generateED25519();
+        // aliceAccountId = await createAccount(client, aliceKey, 20);
+        // const alice = createAccount(client, aliceKey, aliceAccountId);
 
-        console.log("account creation success");
+        // console.log("account creation success");
 
         const stakingToken = await createFungibleToken(
             "ERC4626 on Hedera",
@@ -52,13 +52,13 @@ describe("Vault", function () {
         );
         await hederaVault.waitForDeployment();
 
-        client.setOperator(aliceAccountId!, aliceKey);
-        const tokenAssociate = await new TokenAssociateTransaction()
-            .setAccountId(aliceAccountId!)
-            .setTokenIds([stakingToken!])
-            .execute(client);
+        // client.setOperator(aliceAccountId!, aliceKey);
+        // const tokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(aliceAccountId!)
+        //     .setTokenIds([stakingToken!])
+        //     .execute(client);
 
-        console.log("association success");
+        // console.log("association success");
 
         // await mintToken(stakingToken, client, 100, operatorPrKey);
 
@@ -76,13 +76,13 @@ describe("Vault", function () {
 
         // console.log("balance check", await stToken.(owner.address));
 
-        client.setOperator(
-            operatorAccountId,
-            operatorPrKey
-        );
-        await TokenTransfer(stakingToken, operatorAccountId, aliceAccountId, 50, client);
+        // client.setOperator(
+        //     operatorAccountId,
+        //     operatorPrKey
+        // );
+        // await TokenTransfer(stakingToken, operatorAccountId, aliceAccountId, 50, client);
 
-        console.log("token transfer success");
+        // console.log("token transfer success");
 
         // console.log(
         //     await TokenBalance(receiver.address, client)
@@ -92,7 +92,7 @@ describe("Vault", function () {
             hederaVault,
             stakingToken,
             // stToken,
-            alice,
+            // alice,
             to,
             client,
             owner,
