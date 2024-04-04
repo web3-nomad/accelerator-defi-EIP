@@ -14,6 +14,7 @@ jobs:
     env:
       RPC_URL: ${{ secrets.RPC_URL }}
       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
 
     steps:      
       - uses: actions/checkout@v4
@@ -33,4 +34,8 @@ jobs:
         run: yarn run compile
 
       - name: Run Tests
-        run: yarn run test
+        run: yarn hardhat test test/erc3643/**/**.ts --network hardhat
+
+      - name: Run HTS Tests
+        run: yarn hardhat test test/erc4626/**.ts --network testnet
+        

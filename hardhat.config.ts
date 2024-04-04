@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     testnet: {
       chainId: 296, // hedera testnet chainId
       url: RPC_URL,
-      accounts: [ PRIVATE_KEY || "" ],
+      accounts: [PRIVATE_KEY || ""],
       timeout: 200000000,
       allowUnlimitedContractSize: true,
     },
