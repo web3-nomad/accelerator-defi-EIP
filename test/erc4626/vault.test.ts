@@ -1,5 +1,5 @@
-import { anyValue, ethers, expect } from "./setup";
-import { TokenTransfer, createFungibleToken, TokenBalance, createAccount, addToken, mintToken } from "../scripts/utils";
+import { anyValue, ethers, expect } from "../setup";
+import { TokenTransfer, createFungibleToken, TokenBalance, createAccount, addToken, mintToken } from "../../scripts/utils";
 import { PrivateKey, Client, AccountId, TokenAssociateTransaction, AccountBalanceQuery } from "@hashgraph/sdk";
 
 // constants
