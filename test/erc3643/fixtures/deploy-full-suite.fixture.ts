@@ -192,7 +192,6 @@ export async function deployFullSuiteFixture() {
   await token.connect(deployer).addAgent(await agentManager.getAddress());
   await identityRegistry.connect(deployer).addAgent(await agentManager.getAddress());
 
-  await token.connect(tokenAgent).unpause();
 
   return {
     accounts: {
