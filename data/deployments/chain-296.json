@@ -1,23 +1,23 @@
 {
   "implementations": {
-    "Token": "0x8DE1d8A5F0E2a0E3cB09BE574C000775D5375519",
-    "ClaimTopicsRegistry": "0xDb7B00B3925C2fdE94Fda2E2eE98FFC149806205",
-    "TrustedIssuersRegistry": "0xf410BeA124C52e76f5B240167838C191CD7B049d",
-    "IdentityRegistryStorage": "0x42442096C7E7F8Ea36e675063DeFfb2a8b5001B5",
-    "IdentityRegistry": "0x9B3dD0Bd0836c4472b4555BE7720341fee9D4D69",
-    "ModularCompliance": "0x8F0a913a98E35313FEbC2D546A3B24785EC86178",
-    "Identity": "0x5e367b2ec845f81fA5aa01E924b86419A625154e",
-    "ImplementationAuthority": "0xF891cf6a3b21C8f96Ff7D8BdB140B15214e7dc0D"
+    "Token": "0xD0a3F3628abd0C813107fDa9cF754328B43A5438",
+    "ClaimTopicsRegistry": "0xaE4dc72e4e3D678D6C1C9D1e5Fbc5e7380882135",
+    "TrustedIssuersRegistry": "0x92B47b5b7720DdE20fbA335aACcdD8c971B5802C",
+    "IdentityRegistryStorage": "0x1135245A5b2c40414989cd8B76bF3936173dFF93",
+    "IdentityRegistry": "0xf2087897DFA5bb47cd9d19cEb452B450b6387240",
+    "ModularCompliance": "0xafd21595d8484A3E949c09CEF74eB63A19073Fa9",
+    "Identity": "0x250ED8654F682DBC716F77CEC4e98A11c355A062",
+    "ImplementationAuthority": "0xb287549483D9d1daB6371C82b365dbfF19B492f4"
   },
   "factories": {
-    "IdFactory": "0xA83fc13469110D39dC0BAD896Ba20aCa959ff14A",
-    "TREXImplementationAuthority": "0x37Ec6c3AD1AF27cE1B324d00d4D933649b723907",
-    "TREXFactory": "0x34dcbE9CB5A782438784e512396049c9223C8299",
-    "TREXGateway": "0x586E495171DC91bcf84Db74B6dD12691516B15D5"
+    "IdFactory": "0xC0DF339c6457D78BAD39a8AAaC3dca6DbAb1c4b5",
+    "TREXImplementationAuthority": "0xF9693d202D21b7005927950aB5aC14dA8616C327",
+    "TREXFactory": "0xb7d3b7992174Bcc5fc72922685A3A70020145231",
+    "TREXGateway": "0xcB7F1652520938dEFE28383aD26086577EbBe309"
   },
   "compliance": {
-    "RequiresNFTModule": "0x25c18FA8FFB536Ae2C9f85eCd4F493cE50608eb0",
-    "CountryAllowModule": "0x712be6D8fd0Db1dC538fa1593b85498dF99dA5C0"
+    "RequiresNFTModule": "0xA1C46b80dC649F80667DD6d5eBd8069b038A93AC",
+    "CountryAllowModule": "0xDeAe375d9A6facc4F5CB4Bb74f9c9a3df2400672"
   },
   "vault": {}
 }
