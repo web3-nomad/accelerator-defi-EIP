@@ -1,22 +1,23 @@
 {
   "implementations": {
-    "Token": "0x07fb7949C8606037881Af84f569BCdb3F171CA36",
-    "ClaimTopicsRegistry": "0xbd7D63Aacb0965Fd5BFE77cE8E9E9B279c20B4E5",
-    "TrustedIssuersRegistry": "0xC38d12D7eD1CE45b576b6A4dD219510c30bbfddb",
-    "IdentityRegistryStorage": "0x49ad119E7b24D3c3Bf8356f94BEF0762E74E9D5A",
-    "IdentityRegistry": "0x883a551987Ee5895E9410DD3995A2E6555ABb733",
-    "ModularCompliance": "0x0562683F04f2D942b935AE7741e6e99f9122E591",
-    "Identity": "0x2433a54b26c33c6008AB060c40d0aE4a4a5de4A8",
-    "ImplementationAuthority": "0xe8e840070d1afd7799767B71b8C1b708B5F58702"
+    "Token": "0x8DE1d8A5F0E2a0E3cB09BE574C000775D5375519",
+    "ClaimTopicsRegistry": "0xDb7B00B3925C2fdE94Fda2E2eE98FFC149806205",
+    "TrustedIssuersRegistry": "0xf410BeA124C52e76f5B240167838C191CD7B049d",
+    "IdentityRegistryStorage": "0x42442096C7E7F8Ea36e675063DeFfb2a8b5001B5",
+    "IdentityRegistry": "0x9B3dD0Bd0836c4472b4555BE7720341fee9D4D69",
+    "ModularCompliance": "0x8F0a913a98E35313FEbC2D546A3B24785EC86178",
+    "Identity": "0x5e367b2ec845f81fA5aa01E924b86419A625154e",
+    "ImplementationAuthority": "0xF891cf6a3b21C8f96Ff7D8BdB140B15214e7dc0D"
   },
   "factories": {
-    "IdFactory": "0x8C63aa9eb1566DAFa68D69F85cAa8e51175c2f82",
-    "TREXImplementationAuthority": "0xE8891d420cc36aDbfA4600d3fa1b88D5E8034E9D",
-    "TREXFactory": "0x25AC07CB223cA9eCB624c396B347654cbd53482B"
+    "IdFactory": "0xA83fc13469110D39dC0BAD896Ba20aCa959ff14A",
+    "TREXImplementationAuthority": "0x37Ec6c3AD1AF27cE1B324d00d4D933649b723907",
+    "TREXFactory": "0x34dcbE9CB5A782438784e512396049c9223C8299",
+    "TREXGateway": "0x586E495171DC91bcf84Db74B6dD12691516B15D5"
   },
   "compliance": {
-    "RequiresNFTModule": "0xf6A8fDB90E9CD834E9d74E0B3744BF303aA99b5c",
-    "CountryAllowModule": "0x954dbd9f366E50059a507a99DCb5974AA327901e"
+    "RequiresNFTModule": "0x25c18FA8FFB536Ae2C9f85eCd4F493cE50608eb0",
+    "CountryAllowModule": "0x712be6D8fd0Db1dC538fa1593b85498dF99dA5C0"
   },
   "vault": {}
 }
