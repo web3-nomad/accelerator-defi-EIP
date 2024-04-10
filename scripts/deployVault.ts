@@ -14,35 +14,46 @@ async function main() {
   let client = Client.forTestnet();
 
   const operatorPrKey = PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY || '');
-  const operatorAccountId = AccountId.fromString(process.env.OPERATOR_ID || '');
+  const operatorAccountId = AccountId.fromString(process.env.ACCOUNT_ID || '');
 
   client.setOperator(
     operatorAccountId,
     operatorPrKey
   );
 
-  const createERC4626 = await createFungibleToken(
+  const stakingToken = await createFungibleToken(
     "ERC4626 on Hedera",
     "HERC4626",
-    process.env.OPERATOR_ID,
+    process.env.ACCOUNT_ID,
     operatorPrKey.publicKey,
     client,
     operatorPrKey
   );
 
-  const stakingTokenAddress = "0x" + createERC4626!.toSolidityAddress();
+  const rewardToken = await createFungibleToken(
+    "Reward Token 1",
+    "RT1",
+    process.env.ACCOUNT_ID,
+    operatorPrKey.publicKey,
+    client,
+    operatorPrKey
+  );
+
+  const stakingTokenAddress = "0x" + stakingToken!.toSolidityAddress();
+  const rewardTokenAddress = "0x" + rewardToken!.toSolidityAddress();
 
   const HederaVault = await ethers.getContractFactory("HederaVault");
   const hederaVault = await HederaVault.deploy(
     stakingTokenAddress,
     "TST",
     "TST",
-    { from: deployer.address, value: ethers.parseUnits("10", 18) }
+    [rewardTokenAddress],
+    { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("10", 18) }
   );
   console.log("Hash ", hederaVault.deploymentTransaction()?.hash);
   await hederaVault.waitForDeployment();
 
-  console.log(await hederaVault.getAddress());
+  console.log("Vault deployed with address: ", await hederaVault.getAddress());
 }
 
 main().catch((error) => {

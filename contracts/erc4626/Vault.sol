@@ -16,9 +16,9 @@ contract HederaVault is IERC4626 {
     using Bits for uint256;
 
     ERC20 public immutable asset;
-    address newTokenAddress;
+    address public newTokenAddress;
     uint public totalTokens;
-    address[] tokenAddress;
+    address[] public tokenAddress;
     address public owner;
 
     event createdToken(address indexed createdTokenAddress);
@@ -26,8 +26,11 @@ contract HederaVault is IERC4626 {
     constructor(
         ERC20 _underlying,
         string memory _name,
-        string memory _symbol
+        string memory _symbol,
+        address[] memory rewardTokens
     ) payable ERC20(_name, _symbol, _underlying.decimals()) {
+        owner = msg.sender;
+
         SafeHTS.safeAssociateToken(address(_underlying), address(this));
         uint256 supplyKeyType;
         uint256 adminKeyType;
@@ -58,6 +61,8 @@ contract HederaVault is IERC4626 {
         newTokenAddress = SafeHTS.safeCreateFungibleToken(newToken, 0, _underlying.decimals());
         emit createdToken(newTokenAddress);
         asset = _underlying;
+
+        tokenAddress = rewardTokens;
     }
 
     struct UserInfo {
@@ -80,8 +85,6 @@ contract HederaVault is IERC4626 {
 
     function deposit(uint256 amount, address to) public override returns (uint256 shares) {
         require((shares = previewDeposit(amount)) != 0, "ZERO_SHARES");
-
-        asset.approve(address(this), amount);
 
         asset.safeTransferFrom(msg.sender, address(this), amount);
 
@@ -223,9 +226,11 @@ contract HederaVault is IERC4626 {
                         REWARDS LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function addReward(address _token, uint _amount) internal {
+    function addReward(address _token, uint _amount) public {
         require(_amount != 0, "please provide amount");
         require(totalTokens != 0, "no token staked yet");
+        require(msg.sender == owner, "Only owner");
+
         uint perShareRewards;
         perShareRewards = _amount.mulDivDown(1, totalTokens);
         if (!rewardsAddress[_token].exist) {
