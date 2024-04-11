@@ -26,8 +26,7 @@ contract HederaVault is IERC4626 {
     constructor(
         ERC20 _underlying,
         string memory _name,
-        string memory _symbol,
-        address[] memory rewardTokens
+        string memory _symbol
     ) payable ERC20(_name, _symbol, _underlying.decimals()) {
         owner = msg.sender;
 
@@ -61,8 +60,6 @@ contract HederaVault is IERC4626 {
         newTokenAddress = SafeHTS.safeCreateFungibleToken(newToken, 0, _underlying.decimals());
         emit createdToken(newTokenAddress);
         asset = _underlying;
-
-        tokenAddress = rewardTokens;
     }
 
     struct UserInfo {
@@ -84,7 +81,7 @@ contract HederaVault is IERC4626 {
     //////////////////////////////////////////////////////////////*/
 
     function deposit(uint256 amount, address to) public override returns (uint256 shares) {
-        require((shares = previewDeposit(amount)) != 0, "ZERO_SHARES");
+        if ((shares = previewDeposit(amount)) == 0) revert ZeroShares(amount);
 
         asset.safeTransferFrom(msg.sender, address(this), amount);
 

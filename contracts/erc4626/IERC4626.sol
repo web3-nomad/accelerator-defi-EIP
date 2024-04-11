@@ -11,6 +11,8 @@ abstract contract IERC4626 is ERC20 {
     event Deposit(address indexed from, address indexed to, uint256 amount, uint256 shares);
     event Withdraw(address indexed from, address indexed to, uint256 amount, uint256 shares);
 
+    error ZeroShares(uint256 numberOfShares);
+
     /*///////////////////////////////////////////////////////////////
                             Mutable Functions
     //////////////////////////////////////////////////////////////*/
