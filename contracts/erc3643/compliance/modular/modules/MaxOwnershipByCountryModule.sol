@@ -7,12 +7,14 @@ import "../IModularCompliance.sol";
 import "../../../token/IToken.sol";
 import "./AbstractModule.sol";
 
-// This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
+/**
+* _@title MaxOwnershipByCountryModule
+* This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
+*/ 
 contract MaxOwnershipByCountryModule is AbstractModule {
     using SafeMath for uint256;
 
     /// state variables
-
     /// mapping of preset status of compliance addresses
     mapping(address => bool) private _compliancePresetStatus;
 
@@ -35,6 +37,12 @@ contract MaxOwnershipByCountryModule is AbstractModule {
      */
     event MaxPercentageSet(address indexed _compliance, uint256 indexed _maxPercetageLocal, uint256 indexed _maxPercetageNonlocal);
 
+    /**
+     *  this event is emitted when the state of user balances is pre setted.
+     *  `_compliance` is the address of modular compliance concerned
+     *  `_id` user ONCHAINID address
+     *  `_balance` balance setted for the user
+     */
     event IDBalancePreSet(address indexed _compliance, address indexed _id, uint256 _balance);
 
     /// errors
@@ -52,7 +60,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
      *  @dev sets max percentage ownership limit for a bound compliance contract
      *  @param _maxLocal max amount of tokens owned by an local individual
      *  @param _maxNonlocal max amount of tokens owned by an non-local individual
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      *  emits an `MaxPercentageSet` event
      */
     function setMaxPercentage(uint16 _country, uint256 _maxLocal, uint256 _maxNonlocal) external onlyComplianceCall {
@@ -67,7 +75,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
      *  @param _compliance the address of the compliance contract to preset
      *  @param _id the ONCHAINID address of the token holder
      *  @param _balance the current balance of the token holder
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      *  emits a `IDBalancePreSet` event
      */
     function preSetModuleState(address _compliance, address _id, uint256 _balance) external {
@@ -87,14 +95,17 @@ contract MaxOwnershipByCountryModule is AbstractModule {
      *  @param _compliance the address of the compliance contract to preset
      *  @param _id the ONCHAINID address of the token holder
      *  @param _balance the current balance of the token holder
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      *  emits _id.length `IDBalancePreSet` events
      */
     function batchPreSetModuleState(
         address _compliance,
         address[] calldata _id,
         uint256[] calldata _balance) external {
-        if(_id.length == 0 || _id.length != _balance.length) {
+            
+        uint256 idLength = _id.length;
+
+        if(idLength == 0 || idLength != _balance.length) {
             revert InvalidPresetValues(_compliance, _id, _balance);
         }
 
@@ -106,7 +117,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
             revert TokenAlreadyBound(_compliance);
         }
 
-        for (uint i = 0; i < _id.length; i++) {
+        for (uint i = 0; i < idLength; i++) {
             _preSetModuleState(_compliance, _id[i], _balance[i]);
         }
 
@@ -116,7 +127,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     /**
      *  @dev updates compliance preset status as true
      *  @param _compliance the address of the compliance contract
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      */
     function presetCompleted(address _compliance) external {
         if (OwnableUpgradeable(_compliance).owner() != msg.sender) {
@@ -128,7 +139,6 @@ contract MaxOwnershipByCountryModule is AbstractModule {
 
     /**
      *  @dev See {IModule-moduleTransferAction}.
-     *  no transfer action required in this module
      */
     function moduleTransferAction(address _from, address _to, uint256 _value) external override onlyComplianceCall {
         address _idFrom = _getIdentity(msg.sender, _from);
@@ -141,7 +151,6 @@ contract MaxOwnershipByCountryModule is AbstractModule {
 
     /**
      *  @dev See {IModule-moduleMintAction}.
-     *  no mint action required in this module
      */
     function moduleMintAction(address _to, uint256 _value) external override onlyComplianceCall {
         address _idTo = _getIdentity(msg.sender, _to);
@@ -152,7 +161,6 @@ contract MaxOwnershipByCountryModule is AbstractModule {
 
     /**
      *  @dev See {IModule-moduleBurnAction}.
-     *  no burn action required in this module
      */
     function moduleBurnAction(address _from, uint256 _value) external override onlyComplianceCall {
         address _idFrom = _getIdentity(msg.sender, _from);
@@ -185,7 +193,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     }
 
     /**
-    *  @dev getter for compliance identity balance
+     *  @dev getter for compliance identity balance
      *  @param _compliance address of the compliance contract
      *  @param _identity ONCHAINID address
      */
@@ -194,7 +202,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     }
 
     /**
-      *  @dev See {IModule-canComplianceBind}.
+     *  @dev See {IModule-canComplianceBind}.
      */
     function canComplianceBind(address _compliance) external view returns (bool) {
         if (_compliancePresetStatus[_compliance]) {
@@ -211,7 +219,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     }
 
     /**
-      *  @dev See {IModule-isPlugAndPlay}.
+     * @dev See {IModule-isPlugAndPlay}.
      */
     function isPlugAndPlay() external pure returns (bool) {
         return false;
@@ -240,8 +248,8 @@ contract MaxOwnershipByCountryModule is AbstractModule {
      *  @dev function used to get the country of a wallet address.
      *  @param _compliance the compliance contract address for which the country verification is required
      *  @param _userAddress the address of the wallet to be checked
-     *  Returns the ONCHAINID address of the wallet owner
-     *  internal function, used only by the contract itself to process checks on investor countries
+     *  @notice internal function, used only by the contract itself to process checks on investor countries
+     *  returns the ONCHAINID address of the wallet owner
      */
     function _getIdentity(address _compliance, address _userAddress) internal view returns (address) {
         address identity = address(IToken(IModularCompliance(_compliance).getTokenBound())
@@ -253,7 +261,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     /**
     * @dev function used to return percentage of the token supply relative to the amount
     * @param _amount is the amount of the transaction
-    * Returns the calculated percentage
+    * returns the calculated percentage
     */
     function _getPercentage(address _compliance, uint256 _amount) internal view returns (uint256) {
         IToken token = IToken(IModularCompliance(_compliance).getTokenBound());
@@ -269,8 +277,8 @@ contract MaxOwnershipByCountryModule is AbstractModule {
      *  @dev function used to check if user is local or non-local
      *  @param _compliance the compliance contract address for which the country verification is required
      *  @param _userAddress the address of the wallet to be checked
-     *  Returns a boolean flag indicating wether the user is local (true) or non-local (false)
-     *  internal function, used only by the contract itself to process checks on investor countries
+     *  @notice internal function, used only by the contract itself to process checks on investor countries
+     *  returns a boolean flag indicating wether the user is local (true) or non-local (false)
      */
     function _isLocalUser(address _compliance, address _userAddress) internal view returns (bool) {
         uint16 userCountry = IToken(IModularCompliance(_compliance)

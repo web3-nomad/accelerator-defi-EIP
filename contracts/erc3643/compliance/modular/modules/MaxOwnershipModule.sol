@@ -7,7 +7,10 @@ import "../IModularCompliance.sol";
 import "../../../token/IToken.sol";
 import "./AbstractModule.sol";
 
-// This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
+/**
+* _@title MaxOwnershipModule
+* This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
+*/ 
 contract MaxOwnershipModule is AbstractModule {
     using SafeMath for uint256;
 
@@ -32,6 +35,12 @@ contract MaxOwnershipModule is AbstractModule {
      */
     event MaxPercentageSet(address indexed _compliance, uint256 indexed _maxPercetage);
 
+     /**
+     *  this event is emitted when the state of user balances is pre setted.
+     *  `_compliance` is the address of modular compliance concerned
+     *  `_id` user ONCHAINID address
+     *  `_balance` balance setted for the user
+     */
     event IDBalancePreSet(address indexed _compliance, address indexed _id, uint256 _balance);
 
     /// errors
@@ -48,7 +57,7 @@ contract MaxOwnershipModule is AbstractModule {
     /**
      *  @dev sets max percentage ownership limit for a bound compliance contract
      *  @param _max max amount of tokens owned by an individual
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      *  emits an `MaxPercentageSet` event
      */
     function setMaxPercentage(uint256 _max) external onlyComplianceCall {
@@ -61,7 +70,7 @@ contract MaxOwnershipModule is AbstractModule {
      *  @param _compliance the address of the compliance contract to preset
      *  @param _id the ONCHAINID address of the token holder
      *  @param _balance the current balance of the token holder
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      *  emits a `IDBalancePreSet` event
      */
     function preSetModuleState(address _compliance, address _id, uint256 _balance) external {
@@ -81,14 +90,17 @@ contract MaxOwnershipModule is AbstractModule {
      *  @param _compliance the address of the compliance contract to preset
      *  @param _id the ONCHAINID address of the token holder
      *  @param _balance the current balance of the token holder
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice  Only the owner of the Compliance smart contract can call this function
      *  emits _id.length `IDBalancePreSet` events
      */
     function batchPreSetModuleState(
         address _compliance,
         address[] calldata _id,
         uint256[] calldata _balance) external {
-        if(_id.length == 0 || _id.length != _balance.length) {
+
+        uint256 idLength = _id.length;
+
+        if(idLength == 0 || idLength != _balance.length) {
             revert InvalidPresetValues(_compliance, _id, _balance);
         }
 
@@ -100,7 +112,7 @@ contract MaxOwnershipModule is AbstractModule {
             revert TokenAlreadyBound(_compliance);
         }
 
-        for (uint i = 0; i < _id.length; i++) {
+        for (uint i = 0; i < idLength; i++) {
             _preSetModuleState(_compliance, _id[i], _balance[i]);
         }
 
@@ -110,7 +122,7 @@ contract MaxOwnershipModule is AbstractModule {
     /**
      *  @dev updates compliance preset status as true
      *  @param _compliance the address of the compliance contract
-     *  Only the owner of the Compliance smart contract can call this function
+     *  @notice Only the owner of the Compliance smart contract can call this function
      */
     function presetCompleted(address _compliance) external {
         if (OwnableUpgradeable(_compliance).owner() != msg.sender) {
@@ -122,7 +134,6 @@ contract MaxOwnershipModule is AbstractModule {
 
     /**
      *  @dev See {IModule-moduleTransferAction}.
-     *  no transfer action required in this module
      */
     function moduleTransferAction(address _from, address _to, uint256 _value) external override onlyComplianceCall {
         address _idFrom = _getIdentity(msg.sender, _from);
@@ -134,7 +145,6 @@ contract MaxOwnershipModule is AbstractModule {
 
     /**
      *  @dev See {IModule-moduleMintAction}.
-     *  no mint action required in this module
      */
     function moduleMintAction(address _to, uint256 _value) external override onlyComplianceCall {
         address _idTo = _getIdentity(msg.sender, _to);
@@ -144,7 +154,6 @@ contract MaxOwnershipModule is AbstractModule {
 
     /**
      *  @dev See {IModule-moduleBurnAction}.
-     *  no burn action required in this module
      */
     function moduleBurnAction(address _from, uint256 _value) external override onlyComplianceCall {
         address _idFrom = _getIdentity(msg.sender, _from);
@@ -231,8 +240,8 @@ contract MaxOwnershipModule is AbstractModule {
      *  @dev function used to get the country of a wallet address.
      *  @param _compliance the compliance contract address for which the country verification is required
      *  @param _userAddress the address of the wallet to be checked
+     *  @notice internal function, used only by the contract itself to process checks on investor countries
      *  Returns the ONCHAINID address of the wallet owner
-     *  internal function, used only by the contract itself to process checks on investor countries
      */
     function _getIdentity(address _compliance, address _userAddress) internal view returns (address) {
         address identity = address(IToken(IModularCompliance(_compliance).getTokenBound())
