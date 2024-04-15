@@ -96,12 +96,14 @@ async function deployComplianceModules(contracts: Record<string, any>): Promise<
   // Deploy compliance Modules
   const requiresNFTModule = await ethers.deployContract('RequiresNFTModule', deployer);
   const countryAllowModule = await ethers.deployContract('CountryAllowModule', deployer);
+  const maxOwnershipByCountryModule = await ethers.deployContract('MaxOwnershipByCountryModule', deployer);
 
   return {
     ...contracts,
     compliance: {
       RequiresNFTModule: await requiresNFTModule.getAddress(),
       CountryAllowModule: await countryAllowModule.getAddress(),
+      MaxOwnershipByCountryModule: await maxOwnershipByCountryModule.getAddress(),
     }
   }
 }

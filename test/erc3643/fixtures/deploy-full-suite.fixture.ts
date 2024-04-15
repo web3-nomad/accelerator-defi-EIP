@@ -143,7 +143,7 @@ export async function deployFullSuiteFixture() {
 
   await identityRegistry
     .connect(tokenAgent)
-    .batchRegisterIdentity([aliceWallet.address, bobWallet.address], [await aliceIdentity.getAddress(), await bobIdentity.getAddress()], [42, 666]);
+    .batchRegisterIdentity([aliceWallet.address, bobWallet.address], [await aliceIdentity.getAddress(), await bobIdentity.getAddress()], [840, 76]); // alice is from US and Bob from Brazil
 
   const claimForAlice = {
     data: ethers.hexlify(ethers.toUtf8Bytes('Some claim public data.')),
