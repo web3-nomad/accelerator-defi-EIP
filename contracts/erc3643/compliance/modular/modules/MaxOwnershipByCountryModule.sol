@@ -22,7 +22,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     mapping(address => uint16) private _localCountry;
 
     /// maximum percetage ownership per investor per local/non local ONCHAINID per modular compliance
-    mapping(address => mapping(bool => uint256)) private _maxPercentage;
+    mapping(address => mapping(bool => uint16)) private _maxPercentage;
 
     /// mapping of balances per ONCHAINID per modular compliance
     // solhint-disable-next-line var-name-mixedcase
@@ -58,12 +58,12 @@ contract MaxOwnershipByCountryModule is AbstractModule {
 
     /**
      *  @dev sets max percentage ownership limit for a bound compliance contract
-     *  @param _maxLocal max amount of tokens owned by an local individual
-     *  @param _maxNonlocal max amount of tokens owned by an non-local individual
+     *  @param _maxLocal max percentage of tokens (in basis points (185 = 1.85%)) owned by an local individual
+     *  @param _maxNonlocal max percentage of tokens (in basis points (185 = 1.85%)) owned by an non-local individual
      *  @notice Only the owner of the Compliance smart contract can call this function
      *  emits an `MaxPercentageSet` event
      */
-    function setMaxPercentage(uint16 _country, uint256 _maxLocal, uint256 _maxNonlocal) external onlyComplianceCall {
+    function setMaxPercentage(uint16 _country, uint16 _maxLocal, uint16 _maxNonlocal) external onlyComplianceCall {
         _localCountry[msg.sender] = _country;
         _maxPercentage[msg.sender][true] = _maxLocal;
         _maxPercentage[msg.sender][false] = _maxNonlocal;
@@ -102,7 +102,7 @@ contract MaxOwnershipByCountryModule is AbstractModule {
         address _compliance,
         address[] calldata _id,
         uint256[] calldata _balance) external {
-            
+
         uint256 idLength = _id.length;
 
         if(idLength == 0 || idLength != _balance.length) {
@@ -263,14 +263,18 @@ contract MaxOwnershipByCountryModule is AbstractModule {
     * @param _amount is the amount of the transaction
     * returns the calculated percentage
     */
-    function _getPercentage(address _compliance, uint256 _amount) internal view returns (uint256) {
+    function _getPercentage(address _compliance, uint256 _amount) internal view returns (uint16) {
         IToken token = IToken(IModularCompliance(_compliance).getTokenBound());
         uint256 totalSupply = token.totalSupply();
 
         uint256 decimals = token.decimals();
-        uint256 oneHundred = 100 * 10 ** decimals;
-        
-        return _amount.mul(oneHundred).div(totalSupply, "MaxOwnershipByCountryModule: token total supply is zero");
+
+        // percentage is set in basis point so 10000 = 100%
+        uint256 oneHundred = 100 * 10 ** 2;
+
+        return uint16(
+            _amount.mul(oneHundred).div(totalSupply, "MaxOwnershipByCountryModule: token total supply is zero")
+        );
     }
 
     /**
