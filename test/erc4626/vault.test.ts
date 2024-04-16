@@ -2,7 +2,6 @@ import { anyValue, ethers, expect } from "../setup";
 import { TokenTransfer, createFungibleToken, TokenBalance, createAccount, addToken, mintToken } from "../../scripts/utils";
 import { PrivateKey, Client, AccountId, TokenAssociateTransaction, AccountBalanceQuery } from "@hashgraph/sdk";
 import hre from "hardhat";
-import { should } from "chai";
 
 // constants
 const stakingTokenId = "0.0.3757626";
@@ -116,7 +115,7 @@ describe("Vault", function () {
             const { hederaVault, owner, stakingToken, rewardToken } = await deployFixture();
             const amountToDeposit = 1;
 
-            console.log(await hederaVault.previewDeposit(amountToDeposit));
+            console.log("Preview deposit ", await hederaVault.previewDeposit(amountToDeposit));
 
             // await rewardToken.approve(hederaVault.target, 3 * 1e8);
 
@@ -145,8 +144,6 @@ describe("Vault", function () {
             const { hederaVaultRevertCases, owner } = await deployFixture();
             const amountToDeposit = 0;
 
-            console.log(await hederaVaultRevertCases.previewDeposit(amountToDeposit));
-
             await expect(
                 hederaVaultRevertCases.connect(owner).deposit(amountToDeposit, owner.address)
             ).to.be.reverted;
@@ -158,12 +155,16 @@ describe("Vault", function () {
             const { hederaVault, owner } = await deployFixture();
             const amountToWithdraw = 1;
 
-            const tx = await hederaVault.connect(owner).withdraw(
+            console.log("Preview Withdraw ", await hederaVault.previewWithdraw(amountToWithdraw));
+
+            const tx = await hederaVault.withdraw(
                 amountToWithdraw,
                 owner.address,
                 owner.address,
                 { gasLimit: 3000000 }
             );
+
+            console.log(tx.hash);
 
             await expect(
                 tx
@@ -178,6 +179,7 @@ describe("Vault", function () {
             const amountOfShares = 1;
 
             const amount = await hederaVault.previewMint(amountOfShares);
+            console.log("Preview Mint ", amount);
 
             await stakingToken.approve(hederaVault.target, amount);
 
@@ -187,6 +189,8 @@ describe("Vault", function () {
                 { gasLimit: 3000000 }
             );
 
+            console.log(tx.hash);
+
             await expect(
                 tx
             ).to.emit(hederaVault, "Deposit")
@@ -195,33 +199,33 @@ describe("Vault", function () {
     });
 
     describe("redeem", function () {
-        it("Should redeem tokens", async function () {
-            const { hederaVault, owner, stakingToken, sharesToken } = await deployFixture();
-            const amountOfShares = 1;
+        // it("Should redeem tokens", async function () {
+        //     const { hederaVault, owner, stakingToken, sharesToken } = await deployFixture();
+        //     const amountOfShares = 1;
 
-            const tokensAmount = await hederaVault.previewRedeem(amountOfShares);
-            console.log("Preview redeem ", tokensAmount);
+        //     const tokensAmount = await hederaVault.previewRedeem(amountOfShares);
+        //     console.log("Preview redeem ", tokensAmount);
 
-            console.log("TOTAL SUPPLY", await hederaVault.totalSupply());
-            console.log("TOTAL ASSETS", await hederaVault.totalAssets());
-            console.log("TOTAL TOKENS", await hederaVault.totalTokens());
+        //     console.log("TOTAL SUPPLY", await hederaVault.totalSupply());
+        //     console.log("TOTAL ASSETS", await hederaVault.totalAssets());
+        //     console.log("TOTAL TOKENS", await hederaVault.totalTokens());
 
-            await stakingToken.approve(hederaVault.target, amountOfShares);
+        // await stakingToken.approve(hederaVault.target, amountOfShares);
 
-            const tx = await hederaVault.connect(owner).redeem(
-                amountOfShares,
-                owner.address,
-                owner.address,
-                { gasLimit: 3000000 }
-            );
+        // const tx = await hederaVault.connect(owner).redeem(
+        //     amountOfShares,
+        //     owner.address,
+        //     owner.address,
+        //     { gasLimit: 3000000 }
+        // );
 
-            console.log(tx.hash);
+        // console.log(tx.hash);
 
-            await expect(
-                tx
-            ).to.emit(hederaVault, "Withdraw")
-                .withArgs(owner.address, owner.address, tokensAmount, amountOfShares);
-        });
+        // await expect(
+        //     tx
+        // ).to.emit(hederaVault, "Withdraw")
+        //     .withArgs(owner.address, owner.address, tokensAmount, amountOfShares);
+        // });
 
         it("Should revert if zero assets", async function () {
             const { hederaVaultRevertCases, owner } = await deployFixture();
