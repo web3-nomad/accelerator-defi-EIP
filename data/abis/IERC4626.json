@@ -4,6 +4,17 @@
   "sourceName": "contracts/erc4626/IERC4626.sol",
   "abi": [
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "numberOfShares",
+          "type": "uint256"
+        }
+      ],
+      "name": "ZeroShares",
+      "type": "error"
+    },
+    {
       "anonymous": false,
       "inputs": [
         {
