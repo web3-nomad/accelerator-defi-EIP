@@ -198,6 +198,7 @@ contract HederaVault is IERC4626 {
             for (uint i; i < tokenAddress.length; i++) {
                 address token = tokenAddress[i];
                 userContribution[msg.sender].lastClaimedAmountT[token] = rewardsAddress[token].amount;
+                SafeHTS.safeAssociateToken(token, msg.sender);
             }
             userContribution[msg.sender].num_shares = amount;
             userContribution[msg.sender].exist = true;

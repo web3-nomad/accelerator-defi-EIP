@@ -11,7 +11,7 @@ const revertCasesVaultId = "0.0.3757631";
 
 const newStakingTokenId = "0.0.4229238";
 const newVaultAddress = "0x26767C096B669b0A5Df59efeF0d6CbA3840E47F6"
-const newRewardTokenId = "0.0.4229199";
+const newRewardTokenId = "0.0.4229229";
 const rewardTokenAddress = "0x000000000000000000000000000000000040886d";
 const newSharesTokenAddress = "0x0000000000000000000000000000000000408879";
 const newSharesTokenId = "0.0.4229241";
@@ -88,11 +88,11 @@ describe("Vault", function () {
             newSharesTokenAddress
         );
 
-        await TokenTransfer(newStakingTokenId, operatorAccountId, stAccountId, 10, client);
+        // await TokenTransfer(newStakingTokenId, operatorAccountId, stAccountId, 10, client);
 
         // const stakingTokenOperatorBalance = await (
-        //     await TokenBalance(stAccountId, client)
-        // ).tokens!.get(stakingTokenId);
+        //     await TokenBalance(operatorAccountId, client)
+        // ).tokens!.get(newStakingTokenId);
         // console.log("Staking token balance: ", stakingTokenOperatorBalance.toString());
 
         // const tx = await rewardToken.approve(hederaVault.target, 100);
@@ -111,9 +111,9 @@ describe("Vault", function () {
     }
 
     describe("deposit", function () {
-        it("Should deposit tokens and return shares", async function () {
+        it.only("Should deposit tokens and return shares", async function () {
             const { hederaVault, owner, stakingToken, rewardToken } = await deployFixture();
-            const amountToDeposit = 1;
+            const amountToDeposit = 3;
 
             console.log("Preview deposit ", await hederaVault.previewDeposit(amountToDeposit));
 
@@ -151,11 +151,13 @@ describe("Vault", function () {
     });
 
     describe("withdraw", function () {
-        it("Should withdraw tokens", async function () {
-            const { hederaVault, owner } = await deployFixture();
+        it.only("Should withdraw tokens", async function () {
+            const { hederaVault, owner, sharesToken } = await deployFixture();
             const amountToWithdraw = 1;
 
             console.log("Preview Withdraw ", await hederaVault.previewWithdraw(amountToWithdraw));
+
+            await sharesToken.approve(hederaVault.target, amountToWithdraw)
 
             const tx = await hederaVault.withdraw(
                 amountToWithdraw,
