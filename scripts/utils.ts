@@ -85,7 +85,7 @@ export async function addToken(
     client: Client
 ) {
     let contractFunctionParameters = new ContractFunctionParameters()
-        .addAddress(tokenId.toSolidityAddress())
+        .addAddress(tokenId)
         .addUint256(amount * 1e8);
 
     const notifyRewardTx = await new ContractExecuteTransaction()
@@ -153,5 +153,7 @@ module.exports = {
     getClient,
     createAccount,
     mintToken,
-    TokenTransfer
+    TokenTransfer,
+    TokenBalance,
+    addToken,
 }

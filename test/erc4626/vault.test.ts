@@ -1,138 +1,248 @@
 import { anyValue, ethers, expect } from "../setup";
 import { TokenTransfer, createFungibleToken, TokenBalance, createAccount, addToken, mintToken } from "../../scripts/utils";
 import { PrivateKey, Client, AccountId, TokenAssociateTransaction, AccountBalanceQuery } from "@hashgraph/sdk";
+import hre from "hardhat";
 
 // constants
-let client;
-let aliceKey;
-let aliceAccountId;
+const stakingTokenId = "0.0.3757626";
+const sharesTokenAddress = "0x0000000000000000000000000000000000395640";
+const revertCasesVaultAddress = "0xb3C24B140BA2a69099276e55dE1885e93517C6C6";
+const revertCasesVaultId = "0.0.3757631";
+
+const newStakingTokenId = "0.0.4229238";
+const newVaultAddress = "0x26767C096B669b0A5Df59efeF0d6CbA3840E47F6"
+const newRewardTokenId = "0.0.4229229";
+const rewardTokenAddress = "0x000000000000000000000000000000000040886d";
+const newSharesTokenAddress = "0x0000000000000000000000000000000000408879";
+const newSharesTokenId = "0.0.4229241";
+const newVaultId = "0.0.4229240";
+
+const vaultEr = "0x8b594f719e36cc1bbf08a24b3edbcf50cdeecae6";
 // Tests
 describe("Vault", function () {
     async function deployFixture() {
         const [
             owner,
-            to,
-            admin,
-            ...otherAccounts
         ] = await ethers.getSigners();
 
         let client = Client.forTestnet();
 
         const operatorPrKey = PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY || '');
         const operatorAccountId = AccountId.fromString(process.env.ACCOUNT_ID || '');
+        const stAccountId = AccountId.fromString("0.0.2673429");
 
         client.setOperator(
             operatorAccountId,
             operatorPrKey
         );
 
-        // aliceKey = PrivateKey.generateED25519();
-        // aliceAccountId = await createAccount(client, aliceKey, 20);
-        // const alice = createAccount(client, aliceKey, aliceAccountId);
+        const erc20 = await hre.artifacts.readArtifact("contracts/erc4626/ERC20.sol:ERC20");
 
-        // console.log("account creation success");
-
-        const stakingToken = await createFungibleToken(
-            "ERC4626 on Hedera",
-            "HERC4626",
-            process.env.ACCOUNT_ID,
-            operatorPrKey.publicKey,
-            client,
-            operatorPrKey
-        );
-
-        const stakingTokenAddress = "0x" + stakingToken!.toSolidityAddress();
-
-        const HederaVault = await ethers.getContractFactory("HederaVault");
-        const hederaVault = await HederaVault.deploy(
-            stakingTokenAddress,
-            "TST",
-            "TST",
-            { from: owner.address, gasLimit: 3000000, value: ethers.parseUnits("10", 18) }
-        );
-        await hederaVault.waitForDeployment();
-
-        // client.setOperator(aliceAccountId!, aliceKey);
-        // const tokenAssociate = await new TokenAssociateTransaction()
-        //     .setAccountId(aliceAccountId!)
-        //     .setTokenIds([stakingToken!])
-        //     .execute(client);
-
-        // console.log("association success");
-
-        // await mintToken(stakingToken, client, 100, operatorPrKey);
-
-        // console.log("token mint success");
-
-        // let balanceCheckTreasury = await new AccountBalanceQuery()
-        //     .setAccountId(operatorAccountId)
-        //     .execute(client);
-
-        // console.log(
-        //     " Treasury balance: " + balanceCheckTreasury.tokens
-        // );
-
-        // const stToken = ethers.getContractAt("HederaVault", stakingTokenAddress);
-
-        // console.log("balance check", await stToken.(owner.address));
-
-        // client.setOperator(
-        //     operatorAccountId,
+        // const rewardToken = await createFungibleToken(
+        //     "Reward Token 1",
+        //     "RT1",
+        //     process.env.ACCOUNT_ID,
+        //     operatorPrKey.publicKey,
+        //     client,
         //     operatorPrKey
         // );
-        // await TokenTransfer(stakingToken, operatorAccountId, aliceAccountId, 50, client);
 
-        // console.log("token transfer success");
+        // console.log("Reward token addrress", rewardToken?.toSolidityAddress());
 
-        // console.log(
-        //     await TokenBalance(receiver.address, client)
-        // );
+        // const sharesTokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(operatorAccountId)
+        //     .setTokenIds([newSharesTokenId])
+        //     .execute(client);
+
+        // const stakingTokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(operatorAccountId)
+        //     .setTokenIds([newStakingTokenId])
+        //     .execute(client);
+
+        // const rewardTokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(operatorAccountId)
+        //     .setTokenIds([newRewardTokenId])
+        //     .execute(client);
+
+        const hederaVaultRevertCases = await ethers.getContractAt(
+            "HederaVault",
+            revertCasesVaultAddress
+        );
+        const hederaVault = await ethers.getContractAt(
+            "HederaVault",
+            vaultEr
+        );
+
+        const rewardToken = await ethers.getContractAt(
+            erc20.abi,
+            rewardTokenAddress
+        );
+
+        const stakingToken = await ethers.getContractAt(
+            erc20.abi,
+            await hederaVault.asset()
+        );
+
+        const sharesToken = await ethers.getContractAt(
+            erc20.abi,
+            newSharesTokenAddress
+        );
+
+        // await TokenTransfer(newStakingTokenId, operatorAccountId, stAccountId, 10, client);
+
+        // const stakingTokenOperatorBalance = await (
+        //     await TokenBalance(operatorAccountId, client)
+        // ).tokens!.get(newStakingTokenId);
+        // console.log("Staking token balance: ", stakingTokenOperatorBalance.toString());
+
+        // const tx = await rewardToken.approve(hederaVault.target, 100);
+
+        // const rewTx = await hederaVault.addReward(rewardTokenAddress, 100, { gasLimit: 3000000 });
 
         return {
             hederaVault,
+            hederaVaultRevertCases,
+            rewardToken,
             stakingToken,
-            // stToken,
-            // alice,
-            to,
+            sharesToken,
             client,
             owner,
-            admin,
-            otherAccounts,
         };
     }
 
     describe("deposit", function () {
-        // it("Should deposit tokens and return shares", async function () {
-        //     const { hederaVault, to, owner, client, stakingToken } = await deployFixture();
-        //     // const amountToDeposit = 1;
-        //     // const amountToWithdraw = 1 * 1e8;
+        it.only("Should deposit tokens and return shares", async function () {
+            const { hederaVault, owner, stakingToken, rewardToken } = await deployFixture();
+            const amountToDeposit = 3;
 
-        //     // console.log("work1");
-        //     // await addToken(hederaVault, stakingToken, 10, client);
+            console.log("Preview deposit ", await hederaVault.previewDeposit(amountToDeposit));
 
-        //     // console.log("work");
+            // await rewardToken.approve(hederaVault.target, 3 * 1e8);
 
-        //     // const tx = await hederaVault.connect(owner).withdraw(
-        //     //     amountToWithdraw,
-        //     //     owner.address,
-        //     //     owner.address
-        //     // );
+            // const tx = await hederaVault.addReward(rewardTokenAddress, 3 * 1e8, { gasLimit: 3000000, value: ethers.parseUnits("5", 18) });
+            // console.log(tx.hash);
 
-        //     // console.log("with");
+            // console.log("TOTAL TOKENS", (await hederaVault.rewardsAddress(rewardTokenAddress)).amount);
 
-        //     // // const tx = await hederaVault.connect(owner).deposit(amountToDeposit, to.address);
+            await stakingToken.approve(hederaVault.target, amountToDeposit);
 
-        //     // await expect(
-        //     //     tx
-        //     // ).to.emit(hederaVault, "Withdraw")
-        //     //     .withArgs(owner.address, owner.address, amountToWithdraw, anyValue);
+            const tx = await hederaVault.connect(owner).deposit(
+                amountToDeposit,
+                owner.address,
+                { gasLimit: 3000000 }
+            );
+
+            console.log(tx.hash);
+
+            await expect(
+                tx
+            ).to.emit(hederaVault, "Deposit")
+                .withArgs(owner.address, owner.address, amountToDeposit, anyValue);
+        });
+
+        it("Should revert if zero shares", async function () {
+            const { hederaVaultRevertCases, owner } = await deployFixture();
+            const amountToDeposit = 0;
+
+            await expect(
+                hederaVaultRevertCases.connect(owner).deposit(amountToDeposit, owner.address)
+            ).to.be.reverted;
+        });
+    });
+
+    describe("withdraw", function () {
+        it.only("Should withdraw tokens", async function () {
+            const { hederaVault, owner, sharesToken } = await deployFixture();
+            const amountToWithdraw = 1;
+
+            console.log("Preview Withdraw ", await hederaVault.previewWithdraw(amountToWithdraw));
+
+            await sharesToken.approve(hederaVault.target, amountToWithdraw)
+
+            const tx = await hederaVault.withdraw(
+                amountToWithdraw,
+                owner.address,
+                owner.address,
+                { gasLimit: 3000000 }
+            );
+
+            console.log(tx.hash);
+
+            await expect(
+                tx
+            ).to.emit(hederaVault, "Withdraw")
+                .withArgs(owner.address, owner.address, amountToWithdraw, anyValue);
+        });
+    });
+
+    describe("mint", function () {
+        it("Should mint tokens", async function () {
+            const { hederaVault, owner, stakingToken } = await deployFixture();
+            const amountOfShares = 1;
+
+            const amount = await hederaVault.previewMint(amountOfShares);
+            console.log("Preview Mint ", amount);
+
+            await stakingToken.approve(hederaVault.target, amount);
+
+            const tx = await hederaVault.connect(owner).mint(
+                amountOfShares,
+                owner.address,
+                { gasLimit: 3000000 }
+            );
+
+            console.log(tx.hash);
+
+            await expect(
+                tx
+            ).to.emit(hederaVault, "Deposit")
+                .withArgs(owner.address, owner.address, anyValue, amountOfShares);
+        });
+    });
+
+    describe("redeem", function () {
+        // it("Should redeem tokens", async function () {
+        //     const { hederaVault, owner, stakingToken, sharesToken } = await deployFixture();
+        //     const amountOfShares = 1;
+
+        //     const tokensAmount = await hederaVault.previewRedeem(amountOfShares);
+        //     console.log("Preview redeem ", tokensAmount);
+
+        //     console.log("TOTAL SUPPLY", await hederaVault.totalSupply());
+        //     console.log("TOTAL ASSETS", await hederaVault.totalAssets());
+        //     console.log("TOTAL TOKENS", await hederaVault.totalTokens());
+
+        // await stakingToken.approve(hederaVault.target, amountOfShares);
+
+        // const tx = await hederaVault.connect(owner).redeem(
+        //     amountOfShares,
+        //     owner.address,
+        //     owner.address,
+        //     { gasLimit: 3000000 }
+        // );
+
+        // console.log(tx.hash);
+
+        // await expect(
+        //     tx
+        // ).to.emit(hederaVault, "Withdraw")
+        //     .withArgs(owner.address, owner.address, tokensAmount, amountOfShares);
         // });
 
-        it("preview", async function () {
-            const { hederaVault, to, owner } = await deployFixture();
-            // const amountToDeposit = 1;
+        it("Should revert if zero assets", async function () {
+            const { hederaVaultRevertCases, owner } = await deployFixture();
+            const amountToReedem = 0;
 
-            // console.log(await hederaVault.connect(owner).previewMint(amountToDeposit));
+            console.log(await hederaVaultRevertCases.previewRedeem(amountToReedem));
+
+            await expect(
+                hederaVaultRevertCases.connect(owner).redeem(
+                    amountToReedem,
+                    owner.address,
+                    owner.address,
+                    { gasLimit: 3000000 }
+                )
+            ).to.be.reverted;
         });
     });
 });
