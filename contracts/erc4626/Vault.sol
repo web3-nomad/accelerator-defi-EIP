@@ -21,7 +21,13 @@ contract HederaVault is IERC4626 {
     address[] public tokenAddress;
     address public owner;
 
-    event createdToken(address indexed createdTokenAddress);
+    /**
+     * @notice CreatedToken event.
+     * @dev Emitted after contract initialization, when represented shares token is deployed.
+     *
+     * @param createdToken The address of created token.
+     */
+    event CreatedToken(address indexed createdToken);
 
     constructor(
         ERC20 _underlying,
@@ -58,7 +64,7 @@ contract HederaVault is IERC4626 {
         newToken.expiry = expiry;
         newToken.tokenKeys = keys;
         newTokenAddress = SafeHTS.safeCreateFungibleToken(newToken, 0, _underlying.decimals());
-        emit createdToken(newTokenAddress);
+        emit CreatedToken(newTokenAddress);
         asset = _underlying;
     }
 
@@ -80,6 +86,13 @@ contract HederaVault is IERC4626 {
                         DEPOSIT/WITHDRAWAL LOGIC
     //////////////////////////////////////////////////////////////*/
 
+    /**
+     * @dev Deposits staking token to the Vault and returns shares.
+     *
+     * @param amount The amount of staking token to send.
+     * @param to The shares receiver address.
+     * @return shares The amount of shares to receive.
+     */
     function deposit(uint256 amount, address to) public override returns (uint256 shares) {
         if ((shares = previewDeposit(amount)) == 0) revert ZeroShares(amount);
 
@@ -96,6 +109,13 @@ contract HederaVault is IERC4626 {
         afterDeposit(amount);
     }
 
+    /**
+     * @dev Mints.
+     *
+     * @param shares The amount of shares to send.
+     * @param to The receiver of tokens.
+     * @return amount The amount of tokens to receive.
+     */
     function mint(uint256 shares, address to) public override returns (uint256 amount) {
         _mint(to, amount = previewMint(shares));
 
@@ -110,6 +130,14 @@ contract HederaVault is IERC4626 {
         afterDeposit(amount);
     }
 
+    /**
+     * @dev Withdraws staking token and burns shares.
+     *
+     * @param amount The amount of shares.
+     * @param to The staking token receiver.
+     * @param from The .
+     * @return shares The amount of shares to burn.
+     */
     function withdraw(uint256 amount, address to, address from) public override returns (uint256 shares) {
         beforeWithdraw(amount);
 
@@ -125,6 +153,14 @@ contract HederaVault is IERC4626 {
         asset.safeTransfer(to, amount);
     }
 
+    /**
+     * @dev Redeems .
+     *
+     * @param shares The amount of shares.
+     * @param to The staking token receiver.
+     * @param from The .
+     * @return amount The amount of shares to burn.
+     */
     function redeem(uint256 shares, address to, address from) public override returns (uint256 amount) {
         require((amount = previewRedeem(shares)) != 0, "ZERO_ASSETS");
 
@@ -141,12 +177,22 @@ contract HederaVault is IERC4626 {
                          INTERNAL HOOKS LOGIC
     //////////////////////////////////////////////////////////////*/
 
+    /**
+     * @dev Updates user state according to withdraw inputs.
+     *
+     * @param amount The amount of shares.
+     */
     function beforeWithdraw(uint256 amount) internal {
         // claimAllReward(0);
         userContribution[msg.sender].num_shares -= amount;
         totalTokens -= amount;
     }
 
+    /**
+     * @dev Updates user state according to withdraw inputs.
+     *
+     * @param amount The amount of shares.
+     */
     function afterDeposit(uint256 amount) internal {
         if (!userContribution[msg.sender].exist) {
             for (uint i; i < tokenAddress.length; i++) {
@@ -223,7 +269,7 @@ contract HederaVault is IERC4626 {
                         REWARDS LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function addReward(address _token, uint _amount) public {
+    function addReward(address _token, uint _amount) public payable {
         require(_amount != 0, "please provide amount");
         require(totalTokens != 0, "no token staked yet");
         require(msg.sender == owner, "Only owner");
@@ -234,6 +280,7 @@ contract HederaVault is IERC4626 {
             tokenAddress.push(_token);
             rewardsAddress[_token].exist = true;
             rewardsAddress[_token].amount = perShareRewards;
+            SafeHTS.safeAssociateToken(_token, address(this));
             ERC20(_token).safeTransferFrom(address(msg.sender), address(this), _amount);
         } else {
             rewardsAddress[_token].amount += perShareRewards;

@@ -37,7 +37,7 @@ async function main() {
     stakingTokenAddress,
     "TST",
     "TST",
-    { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("10", 18) }
+    { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("12", 18) }
   );
   console.log("Hash ", hederaVault.deploymentTransaction()?.hash);
   await hederaVault.waitForDeployment();
