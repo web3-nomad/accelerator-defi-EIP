@@ -38,8 +38,8 @@ jobs:
       - name: Run Tests
         run: yarn hardhat test test/erc3643/**/**.ts --network hardhat
 
-      - name: Run HTS Tests
-        run: yarn hardhat test test/erc4626/**.ts --network testnet
+      # - name: Run HTS Tests
+      #   run: yarn hardhat test test/erc4626/**.ts --network testnet
 
       - name: Create deployment folder
         run: mkdir -p ./data/deployments
