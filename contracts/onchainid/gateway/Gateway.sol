@@ -28,7 +28,7 @@ error SignatureAlreadyRevoked(bytes signature);
 /// Attempted to approve a signature that was not revoked.
 error SignatureNotRevoked(bytes signature);
 
-contract Gateway is Ownable {
+contract IdentityGateway is Ownable {
     IdFactory public idFactory;
     mapping(address => bool) public approvedSigners;
     mapping(bytes => bool) public revokedSignatures;
