@@ -22,6 +22,7 @@ async function deployERC3643(contracts: Record<string, any>): Promise<Record<str
   const identityImplementation = await ethers.deployContract('Identity', [deployer.address, true], deployer);
   const identityImplementationAuthority = await ethers.deployContract('ImplementationAuthority', [await identityImplementation.getAddress()], deployer);
   const identityFactory = await ethers.deployContract('IdFactory', [await identityImplementationAuthority.getAddress()], deployer);
+  const identityGateway = await ethers.deployContract('IdentityGateway', [await identityFactory.getAddress(), []], deployer);
   const trexImplementationAuthority = await ethers.deployContract('TREXImplementationAuthority', [true, ethers.ZeroAddress, ethers.ZeroAddress], deployer);
 
   // creates TREX Factory
@@ -67,6 +68,7 @@ async function deployERC3643(contracts: Record<string, any>): Promise<Record<str
   await trexGateway.waitForDeployment();
 
   await trexFactory.connect(deployer).transferOwnership(await trexGateway.getAddress());
+  await identityFactory.connect(deployer).transferOwnership(await identityGateway.getAddress());
 
   return {
     ...contracts,
@@ -85,6 +87,7 @@ async function deployERC3643(contracts: Record<string, any>): Promise<Record<str
       TREXImplementationAuthority: await trexImplementationAuthority.getAddress(),
       TREXFactory: await trexFactory.getAddress(),
       TREXGateway: await trexGateway.getAddress(),
+      IdentityGateway: await identityGateway.getAddress(),
     }
   }
 
