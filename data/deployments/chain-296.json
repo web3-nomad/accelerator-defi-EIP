@@ -1,23 +1,25 @@
 {
   "implementations": {
-    "Token": "0xD0a3F3628abd0C813107fDa9cF754328B43A5438",
-    "ClaimTopicsRegistry": "0xaE4dc72e4e3D678D6C1C9D1e5Fbc5e7380882135",
-    "TrustedIssuersRegistry": "0x92B47b5b7720DdE20fbA335aACcdD8c971B5802C",
-    "IdentityRegistryStorage": "0x1135245A5b2c40414989cd8B76bF3936173dFF93",
-    "IdentityRegistry": "0xf2087897DFA5bb47cd9d19cEb452B450b6387240",
-    "ModularCompliance": "0xafd21595d8484A3E949c09CEF74eB63A19073Fa9",
-    "Identity": "0x250ED8654F682DBC716F77CEC4e98A11c355A062",
-    "ImplementationAuthority": "0xb287549483D9d1daB6371C82b365dbfF19B492f4"
+    "Token": "0xB0f1AD71bA47Cc10cD925f06E1b467A5544e9592",
+    "ClaimTopicsRegistry": "0x6396f3444dc7b0E06E5D6453bf367E9dfa7A635C",
+    "TrustedIssuersRegistry": "0x9872BAaDb06D14f998e0185138745e8593E6D3D7",
+    "IdentityRegistryStorage": "0xA0AEA5e7Caa342297c4a9309eC1Db7E9aa15a3EB",
+    "IdentityRegistry": "0xb0b0671aA04d79059BdcBAB5C59270bac5dc80A5",
+    "ModularCompliance": "0x3134520cBB0cC9d0fEA9EAE182cCc29b3b20f0C8",
+    "Identity": "0xdf72070C2bCA419215f1b4A57837396F52c0e1B8",
+    "ImplementationAuthority": "0x0EE2CDdFFcDe197319Ba2Ea8684469bbD25c2e79"
   },
   "factories": {
-    "IdFactory": "0xC0DF339c6457D78BAD39a8AAaC3dca6DbAb1c4b5",
-    "TREXImplementationAuthority": "0xF9693d202D21b7005927950aB5aC14dA8616C327",
-    "TREXFactory": "0xb7d3b7992174Bcc5fc72922685A3A70020145231",
-    "TREXGateway": "0xcB7F1652520938dEFE28383aD26086577EbBe309"
+    "IdFactory": "0xCe444169a11761b361D212005334b13A9d454061",
+    "TREXImplementationAuthority": "0x94eDe092ea4480e00174C73BC615c2466743f3dA",
+    "TREXFactory": "0xf17A4C9E2B00398fB11c88060FdE39066b6269b0",
+    "TREXGateway": "0x56C433eca9E534FF5024Eaedb95C652d31B44a09",
+    "IdentityGateway": "0xcfCF11BEe5575c59e1F4a9D5a53c90A4e5e49D0C"
   },
   "compliance": {
-    "RequiresNFTModule": "0xA1C46b80dC649F80667DD6d5eBd8069b038A93AC",
-    "CountryAllowModule": "0xDeAe375d9A6facc4F5CB4Bb74f9c9a3df2400672"
+    "RequiresNFTModule": "0xA318d349488531882b4fCa6b412A8766F7421044",
+    "CountryAllowModule": "0x73627F621c88A37B3cf212D33716531E53ffd460",
+    "MaxOwnershipByCountryModule": "0x66bf2c085f88AF1b1993364ddB1332095B7AD3Ae"
   },
   "vault": {}
 }
