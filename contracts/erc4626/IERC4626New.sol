@@ -13,23 +13,27 @@ abstract contract IERC4626 is ERC20 {
      * @dev Emitted after the deposit.
      *
      * @param sender The address of the account that performed the deposit.
-     * @param receiver The address that received the shares created after the deposit.
+     * @param owner The address that received the shares created after the deposit.
      * @param assets The amount of assets that were deposited.
-     * @param shares The number of shares that were minted.
+     * @param shares The number of shares that were minted as a result of the deposit.
      */
-    event Deposit(address indexed sender, address indexed receiver, uint256 assets, uint256 shares);
+    event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares);
 
     /**
      * @notice Withdraw event.
      * @dev Emitted when shares are withdrawn from the vault in exchange for underlying assets.
      *
-     * @param sender The sender address.
-     * @param receiver The assets receiver address.
-     * @param assets The amount of withdrawn assets.
-     * @param shares The number of shares that were burned.
+     * @param sender The address of the account that initiated the withdrawal.
+     * @param receiver The address where the withdrawn assets were sent.
+     * @param assets The amount of assets withdrawn.
+     * @param shares The number of shares that were burned as a result of the withdrawal.
      */
     event Withdraw(address indexed sender, address indexed receiver, uint256 assets, uint256 shares);
 
+    /**
+     * @dev Error thrown when an operation would result zero shares.
+     * @param numberOfShares The number of shares.
+     */
     error ZeroShares(uint256 numberOfShares);
 
     /*///////////////////////////////////////////////////////////////
@@ -57,36 +61,36 @@ abstract contract IERC4626 is ERC20 {
     /**
      * @dev Withdraws staking token and burns shares.
      *
-     * @param amount The amount of assets.
+     * @param assets The amount of shares.
      * @param receiver The staking token receiver.
-     * @param from The owner of the shares.
+     * @param _owner The owner of the shares.
      * @return shares The amount of shares to burn.
      */
-    function withdraw(uint256 amount, address receiver, address from) public virtual returns (uint256 shares);
+    function withdraw(uint256 assets, address receiver, address _owner) public virtual returns (uint256 shares);
 
     /**
      * @dev Redeems shares for underlying assets.
      *
      * @param shares The amount of shares.
      * @param receiver The staking token receiver.
-     * @param from The owner of the shares.
+     * @param _owner The owner of the shares.
      * @return amount The amount of shares to burn.
      */
-    function redeem(uint256 shares, address receiver, address from) public virtual returns (uint256 amount);
+    function redeem(uint256 shares, address receiver, address _owner) public virtual returns (uint256 amount);
 
     /*///////////////////////////////////////////////////////////////
                             View Functions
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @dev Returns amount of assets on the contract balance.
+     * @dev Returns amount of assets on the balance of this contract
      *
-     * @return Asset balance of this contract.
+     * @return Asset balance of this contract
      */
     function totalAssets() public view virtual returns (uint256);
 
     /**
-     * @dev Calculates the amount of underlying assets.
+     * @dev Calculates amount of assets that can be received for user share balance.
      *
      * @param user The address of the user.
      * @return The amount of underlying assets equivalent to the user's shares.
@@ -101,53 +105,53 @@ abstract contract IERC4626 is ERC20 {
     function assetsPerShare() public view virtual returns (uint256);
 
     /**
-     * @dev Returns the maximum amount of underlying assets that can be deposited by user.
+     * @dev Returns the maximum number of underlying assets that can be deposited by user.
      *
-     * @return The maximum assets amount that can be deposited.
+     * @return The maximum amount of assets that can be deposited.
      */
     function maxDeposit(address) public virtual returns (uint256);
 
     /**
-     * @dev Returns the maximum amount of shares that can be minted by user.
+     * @dev Returns the maximum number of shares that can be minted by any user.
      *
-     * @return The maximum amount of shares that can be minted.
+     * @return The maximum number of shares that can be minted.
      */
     function maxMint(address) public virtual returns (uint256);
 
     /**
-     * @dev Returns the maximum amount of shares that can be redeemed by user.
+     * @dev Returns the maximum number of shares that can be redeemed by the owner.
      *
-     * @param user The user address.
-     * @return The maximum amount of shares that can be redeemed.
+     * @param _owner The address of the owner.
+     * @return The maximum number of shares that can be redeemed.
      */
-    function maxRedeem(address user) public view virtual returns (uint256);
+    function maxRedeem(address _owner) public view virtual returns (uint256);
 
     /**
      * @dev Calculates the maximum amount of assets that can be withdrawn.
      *
-     * @param user The user address.
+     * @param _owner The address of the owner.
      * @return The maximum amount of assets that can be withdrawn.
      */
-    function maxWithdraw(address user) public view virtual returns (uint256);
+    function maxWithdraw(address _owner) public view virtual returns (uint256);
 
     /**
      * @dev Calculates the number of shares that will be minted for a given amount.
      *
-     * @param assets The underlying assets amount to deposit.
-     * @return shares The estimated amount of shares that can be minted.
+     * @param assets The amount of underlying assets to deposit.
+     * @return shares The estimated number of shares that would be minted.
      */
     function previewDeposit(uint256 assets) public view virtual returns (uint256 shares);
 
     /**
      * @dev Calculates the amount of underlying assets equivalent to a given number of shares.
      *
-     * @param shares The shares amount to mint.
-     * @return amount The estimated underlying assets amount.
+     * @param shares The number of shares to be minted.
+     * @return amount The estimated amount of underlying assets.
      */
     function previewMint(uint256 shares) public view virtual returns (uint256 amount);
 
     /**
-     * @dev Calculates the amount of shares that would be burned for a given assets amount.
+     * @dev Calculates the number of shares that would be burned for a given amount of assets.
      *
      * @param assets The amount of underlying assets to withdraw.
      * @return shares The estimated number of shares that would be burned.
@@ -157,8 +161,8 @@ abstract contract IERC4626 is ERC20 {
     /**
      * @dev Calculates the amount of underlying assets equivalent to a specific number of shares.
      *
-     * @param shares The shares amount to redeem.
-     * @return amount The estimated underlying assets amount that can be redeemed.
+     * @param shares The number of shares to redeem.
+     * @return amount The estimated amount of underlying assets that would be redeemed.
      */
     function previewRedeem(uint256 shares) public view virtual returns (uint256 amount);
 }

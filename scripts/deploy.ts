@@ -1,5 +1,7 @@
 import { ethers } from 'hardhat';
 import { writeFile } from 'fs/promises';
+import { createFungibleToken } from "../scripts/utils";
+import { Client, AccountId, PrivateKey } from "@hashgraph/sdk";
 
 // Initial function for logs and configs
 async function init(): Promise<Record<string, any>> {
@@ -41,8 +43,8 @@ async function deployERC3643(contracts: Record<string, any>): Promise<Record<str
     mcImplementation: await modularComplianceImplementation.getAddress(),
   };
 
-  const trexImplementationAuthorityContract =  await ethers.getContractAt(
-    "TREXImplementationAuthority", 
+  const trexImplementationAuthorityContract = await ethers.getContractAt(
+    "TREXImplementationAuthority",
     await trexImplementationAuthority.getAddress()
   );
 
@@ -51,17 +53,17 @@ async function deployERC3643(contracts: Record<string, any>): Promise<Record<str
 
   const TREXFactory = await ethers.getContractFactory('TREXFactory');
   const trexFactory = await TREXFactory.deploy(
-    await trexImplementationAuthority.getAddress(), 
+    await trexImplementationAuthority.getAddress(),
     await identityFactory.getAddress(),
     { gasLimit: 15000000 }
   );
   await trexFactory.waitForDeployment();
 
   await identityFactory.addTokenFactory(await trexFactory.getAddress());
-    
+
   const TREXGateway = await ethers.getContractFactory('TREXGateway');
   const trexGateway = await TREXGateway.deploy(
-    await trexFactory.getAddress(), 
+    await trexFactory.getAddress(),
     true,
     { gasLimit: 15000000 }
   );
@@ -113,11 +115,50 @@ async function deployComplianceModules(contracts: Record<string, any>): Promise<
 
 // Deploy Vault contracts
 async function deployVault(contracts: Record<string, any>): Promise<Record<string, any>> {
-  console.log(' - Deploying Vault contracts...');
+  const [deployer] = await ethers.getSigners();
+  const network = await ethers.provider.getNetwork();
+
+  console.log("Deploying Vault with account:", deployer.address, "at:", network.name);
+
+  let client = Client.forTestnet();
+
+  const operatorPrKey = PrivateKey.fromStringECDSA(process.env.PRIVATE_KEY || '');
+  const operatorAccountId = AccountId.fromString(process.env.ACCOUNT_ID || '');
+
+  client.setOperator(
+    operatorAccountId,
+    operatorPrKey
+  );
+
+  const stakingToken = await createFungibleToken(
+    "ERC4626 on Hedera",
+    "HERC4626",
+    process.env.ACCOUNT_ID,
+    operatorPrKey.publicKey,
+    client,
+    operatorPrKey
+  );
+
+  const stakingTokenAddress = "0x" + stakingToken!.toSolidityAddress();
+
+  const HederaVault = await ethers.getContractFactory("HederaVault");
+  const hederaVault = await HederaVault.deploy(
+    stakingTokenAddress,
+    "TST",
+    "TST",
+    { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("12", 18) }
+  );
+  console.log("Hash ", hederaVault.deploymentTransaction()?.hash);
+  await hederaVault.waitForDeployment();
+
+  console.log("Vault deployed with address: ", await hederaVault.getAddress());
+
   return {
     ...contracts,
     vault: {
-
+      Vault: hederaVault.target,
+      StakingToken: stakingTokenAddress,
+      Share: await hederaVault.share()
     }
   };
 }
@@ -131,7 +172,7 @@ async function exportDeploymentVersion(contracts: Record<string, any>): Promise<
   await writeFile(filePath, jsonData, 'utf-8');
   console.log(` - Deployment addresses written to ${filePath}`);
 
-  return contracts;  
+  return contracts;
 }
 
 // Finish function
@@ -152,4 +193,4 @@ init()
     process.exitCode = 1;
   });
 
-  
+
