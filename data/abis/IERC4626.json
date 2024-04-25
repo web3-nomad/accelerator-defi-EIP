@@ -45,19 +45,19 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "from",
+          "name": "sender",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "to",
+          "name": "receiver",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "amount",
+          "name": "assets",
           "type": "uint256"
         },
         {
@@ -101,19 +101,19 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "from",
+          "name": "sender",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "to",
+          "name": "receiver",
           "type": "address"
         },
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "amount",
+          "name": "assets",
           "type": "uint256"
         },
         {
@@ -255,12 +255,12 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "amount",
+          "name": "assets",
           "type": "uint256"
         },
         {
           "internalType": "address",
-          "name": "to",
+          "name": "receiver",
           "type": "address"
         }
       ],
@@ -360,7 +360,7 @@
         },
         {
           "internalType": "address",
-          "name": "to",
+          "name": "receiver",
           "type": "address"
         }
       ],
@@ -368,7 +368,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "underlyingAmount",
+          "name": "amount",
           "type": "uint256"
         }
       ],
@@ -454,7 +454,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "underlyingAmount",
+          "name": "assets",
           "type": "uint256"
         }
       ],
@@ -462,7 +462,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "shareAmount",
+          "name": "shares",
           "type": "uint256"
         }
       ],
@@ -473,7 +473,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "shareAmount",
+          "name": "shares",
           "type": "uint256"
         }
       ],
@@ -481,7 +481,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "underlyingAmount",
+          "name": "amount",
           "type": "uint256"
         }
       ],
@@ -492,7 +492,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "shareAmount",
+          "name": "shares",
           "type": "uint256"
         }
       ],
@@ -500,7 +500,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "underlyingAmount",
+          "name": "amount",
           "type": "uint256"
         }
       ],
@@ -511,7 +511,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "underlyingAmount",
+          "name": "assets",
           "type": "uint256"
         }
       ],
@@ -519,7 +519,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "shareAmount",
+          "name": "shares",
           "type": "uint256"
         }
       ],
@@ -535,7 +535,7 @@
         },
         {
           "internalType": "address",
-          "name": "to",
+          "name": "receiver",
           "type": "address"
         },
         {
@@ -656,7 +656,7 @@
         },
         {
           "internalType": "address",
-          "name": "to",
+          "name": "receiver",
           "type": "address"
         },
         {
