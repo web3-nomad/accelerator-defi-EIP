@@ -30,13 +30,32 @@ async function main() {
     operatorPrKey
   );
 
+  const rewardToken = await createFungibleToken(
+    "Reward Token 1",
+    "RT1",
+    process.env.ACCOUNT_ID,
+    operatorPrKey.publicKey,
+    client,
+    operatorPrKey
+  );
+
+  console.log("Reward token addrress", rewardToken!.toSolidityAddress());
+
   const stakingTokenAddress = "0x" + stakingToken!.toSolidityAddress();
+
+  const feeConfig = {
+    receiver: "0x091b4a7ea614a3bd536f9b62ad5641829a1b174f",
+    token: "0x" + rewardToken!.toSolidityAddress(),
+    minAmount: 0,
+    feePercentage: 1000,
+  };
 
   const HederaVault = await ethers.getContractFactory("HederaVault");
   const hederaVault = await HederaVault.deploy(
     stakingTokenAddress,
     "TST",
     "TST",
+    feeConfig,
     { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("12", 18) }
   );
   console.log("Hash ", hederaVault.deploymentTransaction()?.hash);
