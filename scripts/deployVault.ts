@@ -56,6 +56,8 @@ async function main() {
     "TST",
     "TST",
     feeConfig,
+    deployer.address,
+    deployer.address,
     { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("12", 18) }
   );
   console.log("Hash ", hederaVault.deploymentTransaction()?.hash);

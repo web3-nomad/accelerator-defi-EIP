@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../IModularCompliance.sol";
 import "../../../token/IToken.sol";
 import "./AbstractModule.sol";
@@ -12,7 +12,7 @@ import "./AbstractModule.sol";
 * This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
 */ 
 contract MaxOwnershipByCountryModule is AbstractModule {
-    using SafeMath for uint256;
+    using Math for uint256;
 
     /// state variables
     /// mapping of preset status of compliance addresses

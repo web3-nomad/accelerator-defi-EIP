@@ -10,6 +10,8 @@ import {FeeConfiguration} from "../common/FeeConfiguration.sol";
 import {FixedPointMathLib} from "./FixedPointMathLib.sol";
 import {SafeTransferLib} from "./SafeTransferLib.sol";
 
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
 import "../common/safe-HTS/SafeHTS.sol";
 import "../common/safe-HTS/IHederaTokenService.sol";
 
@@ -18,7 +20,7 @@ import "../common/safe-HTS/IHederaTokenService.sol";
  *
  * The contract which represents a custom Vault with Hedera HTS support.
  */
-contract HederaVault is IERC4626, FeeConfiguration {
+contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
     using SafeTransferLib for ERC20;
     using FixedPointMathLib for uint256;
     using Bits for uint256;
@@ -138,7 +140,7 @@ contract HederaVault is IERC4626, FeeConfiguration {
      * @param receiver The shares receiver address.
      * @return shares The amount of shares to receive.
      */
-    function deposit(uint256 assets, address receiver) public override returns (uint256 shares) {
+    function deposit(uint256 assets, address receiver) public override nonReentrant returns (uint256 shares) {
         if ((shares = previewDeposit(assets)) == 0) revert ZeroShares(assets);
 
         asset.safeTransferFrom(msg.sender, address(this), assets);
@@ -161,10 +163,8 @@ contract HederaVault is IERC4626, FeeConfiguration {
      * @param to The receiver of tokens.
      * @return amount The amount of tokens to receive.
      */
-    function mint(uint256 shares, address to) public override returns (uint256 amount) {
+    function mint(uint256 shares, address to) public override nonReentrant returns (uint256 amount) {
         _mint(to, amount = previewMint(shares));
-
-        asset.approve(address(this), amount);
 
         assetTotalSupply += amount;
 
@@ -183,19 +183,23 @@ contract HederaVault is IERC4626, FeeConfiguration {
      * @param from The owner of shares.
      * @return shares The amount of shares to burn.
      */
-    function withdraw(uint256 amount, address receiver, address from) public override returns (uint256 shares) {
+    function withdraw(
+        uint256 amount,
+        address receiver,
+        address from
+    ) public override nonReentrant returns (uint256 shares) {
         beforeWithdraw(amount);
+
+        // _burn(from, shares = previewWithdraw(amount));
+        assetTotalSupply -= amount;
 
         SafeHTS.safeTransferToken(share, msg.sender, address(this), int64(uint64(amount)));
 
         SafeHTS.safeBurnToken(share, uint64(amount), new int64[](0));
 
-        // _burn(from, shares = previewWithdraw(amount));
-        assetTotalSupply -= amount;
+        asset.safeTransfer(receiver, amount);
 
         emit Withdraw(from, receiver, amount, shares);
-
-        asset.safeTransfer(receiver, amount);
     }
 
     /**
@@ -206,7 +210,11 @@ contract HederaVault is IERC4626, FeeConfiguration {
      * @param from The shares owner.
      * @return amount The amount of shares to burn.
      */
-    function redeem(uint256 shares, address receiver, address from) public override returns (uint256 amount) {
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address from
+    ) public override nonReentrant returns (uint256 amount) {
         require((amount = previewRedeem(shares)) != 0, "ZERO_ASSETS");
 
         amount = previewRedeem(shares);
@@ -410,7 +418,7 @@ contract HederaVault is IERC4626, FeeConfiguration {
      * @param _startPosition The starting index in the reward token list from which to begin claiming rewards.
      * @return The index of the start position after the last claimed reward and the total number of reward tokens.
      */
-    function claimAllReward(uint256 _startPosition) public payable returns (uint256, uint256) {
+    function claimAllReward(uint256 _startPosition) public payable nonReentrant returns (uint256, uint256) {
         uint256 rewardTokensSize = rewardTokens.length;
 
         for (uint256 i = _startPosition; i < rewardTokensSize && i < _startPosition + 10; i++) {
