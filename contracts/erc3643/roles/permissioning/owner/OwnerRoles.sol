@@ -92,6 +92,8 @@ contract OwnerRoles is Ownable {
         _;
     }
 
+    constructor() Ownable(msg.sender) {}
+
     /// functions
 
     function addOwnerAdmin(address _owner) external onlyAdmin {

@@ -10,7 +10,7 @@ describe('ClaimTopicsRegistry', () => {
           suite: { claimTopicsRegistry },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(claimTopicsRegistry.init()).to.be.revertedWith('Initializable: contract is already initialized');
+        await expect(claimTopicsRegistry.init()).to.be.revertedWithCustomError(claimTopicsRegistry, "InvalidInitialization")
       });
     });
   });
@@ -23,7 +23,7 @@ describe('ClaimTopicsRegistry', () => {
           accounts: { anotherWallet },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(claimTopicsRegistry.connect(anotherWallet).addClaimTopic(1)).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(claimTopicsRegistry.connect(anotherWallet).addClaimTopic(1)).to.be.revertedWithCustomError(claimTopicsRegistry, 'OwnableUnauthorizedAccount')
       });
     });
 
@@ -64,7 +64,7 @@ describe('ClaimTopicsRegistry', () => {
           accounts: { anotherWallet },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(claimTopicsRegistry.connect(anotherWallet).removeClaimTopic(1)).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(claimTopicsRegistry.connect(anotherWallet).removeClaimTopic(1)).to.be.revertedWithCustomError(claimTopicsRegistry, 'OwnableUnauthorizedAccount')
       });
     });
 

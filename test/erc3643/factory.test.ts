@@ -33,7 +33,8 @@ describe('TREXFactory', () => {
               issuerClaims: [],
             },
           ),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(trexFactory, 'OwnableUnauthorizedAccount');
+        
       });
     });
 
@@ -429,9 +430,7 @@ describe('TREXFactory', () => {
         const event = (await trexFactory.queryFilter(trexFactory.filters.TREXSuiteDeployed, -1))[0];
         const tokenAddress = event.args._token;
 
-        await expect(trexFactory.connect(aliceWallet).recoverContractOwnership(tokenAddress, aliceWallet.address)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(trexFactory.connect(aliceWallet).recoverContractOwnership(tokenAddress, aliceWallet.address)).to.be.revertedWithCustomError(trexFactory, 'OwnableUnauthorizedAccount');
       });
     });
 

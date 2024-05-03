@@ -60,6 +60,8 @@ contract Verifier is Ownable {
         _;
     }
 
+    constructor() Ownable(msg.sender) {}
+
     /**
      *  @dev See {IClaimTopicsRegistry-removeClaimTopic}.
      */

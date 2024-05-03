@@ -92,6 +92,8 @@ contract TransferFeesModule is AbstractModule, Ownable {
 
     error CollectorAddressIsNotVerified(address compliance, address collector);
 
+    constructor() Ownable(msg.sender) {}
+
     /**
     *  @dev Sets the fee rate and collector of the given compliance
     *  @param _rate is the rate of the fee (0.01% = 1, 1% = 100, 100% = 10000)

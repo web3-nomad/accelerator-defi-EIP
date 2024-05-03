@@ -11,7 +11,7 @@ describe('IdentityRegistryStorage', () => {
           suite: { identityRegistryStorage },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(identityRegistryStorage.init()).to.be.revertedWith('Initializable: contract is already initialized');
+        await expect(identityRegistryStorage.init()).to.be.revertedWithCustomError(identityRegistryStorage, "InvalidInitialization")
       });
     });
   });
@@ -249,9 +249,7 @@ describe('IdentityRegistryStorage', () => {
           identities: { charlieIdentity },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(identityRegistryStorage.connect(anotherWallet).bindIdentityRegistry(await charlieIdentity.getAddress())).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(identityRegistryStorage.connect(anotherWallet).bindIdentityRegistry(await charlieIdentity.getAddress())).to.be.revertedWithCustomError(identityRegistryStorage, 'OwnableUnauthorizedAccount')
       });
     });
 
@@ -298,9 +296,7 @@ describe('IdentityRegistryStorage', () => {
           identities: { charlieIdentity },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(identityRegistryStorage.connect(anotherWallet).unbindIdentityRegistry(await charlieIdentity.getAddress())).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(identityRegistryStorage.connect(anotherWallet).unbindIdentityRegistry(await charlieIdentity.getAddress())).to.be.revertedWithCustomError(identityRegistryStorage, 'OwnableUnauthorizedAccount')
       });
     });
 

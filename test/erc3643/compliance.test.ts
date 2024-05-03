@@ -14,7 +14,7 @@ describe('ModularCompliance', () => {
         suite: { compliance },
       } = await loadFixture(deploySuiteWithModularCompliancesFixture);
 
-      await expect(compliance.init()).to.be.revertedWith('Initializable: contract is already initialized');
+      await expect(compliance.init()).to.be.revertedWithCustomError(compliance, "InvalidInitialization")
     });
   });
 
@@ -146,9 +146,7 @@ describe('ModularCompliance', () => {
           suite: { compliance },
         } = await loadFixture(deploySuiteWithModularCompliancesFixture);
 
-        await expect(compliance.connect(anotherWallet).addModule(ethers.ZeroAddress)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(compliance.connect(anotherWallet).addModule(ethers.ZeroAddress)).to.be.revertedWithCustomError(compliance, "OwnableUnauthorizedAccount");
       });
     });
 
@@ -250,9 +248,7 @@ describe('ModularCompliance', () => {
           suite: { compliance },
         } = await loadFixture(deploySuiteWithModularCompliancesFixture);
 
-        await expect(compliance.connect(anotherWallet).removeModule(ethers.ZeroAddress)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(compliance.connect(anotherWallet).removeModule(ethers.ZeroAddress)).to.be.revertedWithCustomError(compliance, "OwnableUnauthorizedAccount");
       });
     });
 
@@ -482,7 +478,8 @@ describe('ModularCompliance', () => {
 
         await expect(
           compliance.connect(anotherWallet).callModuleFunction(ethers.randomBytes(32), ethers.ZeroAddress),
-        ).to.be.revertedWith('Ownable: caller is not the owner');
+        ).to.be.revertedWithCustomError(compliance, 'OwnableUnauthorizedAccount');
+        
       });
     });
 
