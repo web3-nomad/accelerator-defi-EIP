@@ -112,6 +112,8 @@ contract ExchangeMonthlyLimitsModule is AbstractModule, Ownable {
 
     error ONCHAINIDNotTaggedAsExchange(address _exchangeID);
 
+    constructor() Ownable(msg.sender) {}
+
     /**
      *  @dev Set the limit of tokens allowed to be transferred monthly.
      *  @param _exchangeID ONCHAINID of the exchange

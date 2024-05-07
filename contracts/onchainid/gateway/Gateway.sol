@@ -3,9 +3,12 @@ pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "../factory/IdFactory.sol";
 
 using ECDSA for bytes32;
+using MessageHashUtils for bytes32;
 
 /// A required parameter was set to the Zero address.
 error ZeroAddress();
@@ -42,7 +45,7 @@ contract IdentityGateway is Ownable {
      *  @dev Constructor for the ONCHAINID Factory Gateway.
      *  @param idFactoryAddress the address of the factory to operate (the Gateway must be owner of the Factory).
      */
-    constructor(address idFactoryAddress, address[] memory signersToApprove) Ownable() {
+    constructor(address idFactoryAddress, address[] memory signersToApprove) Ownable(msg.sender) {
         if (idFactoryAddress == address(0)) {
             revert ZeroAddress();
         }

@@ -91,7 +91,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     mapping(string => address) public tokenDeployed;
 
     /// constructor is setting the implementation authority and the Identity Factory of the TREX factory
-    constructor(address implementationAuthority_, address idFactory_) {
+    constructor(address implementationAuthority_, address idFactory_) Ownable(msg.sender) {
         setImplementationAuthority(implementationAuthority_);
         setIdFactory(idFactory_);
     }

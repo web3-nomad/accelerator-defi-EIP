@@ -80,6 +80,8 @@ contract AgentRole is Ownable {
         _;
     }
 
+    constructor() Ownable(msg.sender) {}
+
     function addAgent(address _agent) public onlyOwner {
         require(_agent != address(0), "invalid argument - zero address");
         _agents.add(_agent);

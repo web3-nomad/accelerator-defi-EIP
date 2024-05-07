@@ -267,13 +267,15 @@ contract MaxOwnershipByCountryModule is AbstractModule {
         IToken token = IToken(IModularCompliance(_compliance).getTokenBound());
         uint256 totalSupply = token.totalSupply();
 
+        require(totalSupply > 0, "MaxOwnershipByCountryModule: token total supply is zero");
+
         uint256 decimals = token.decimals();
 
         // percentage is set in basis point so 10000 = 100%
         uint256 oneHundred = 100 * 10 ** 2;
 
         return uint16(
-            _amount.mul(oneHundred).div(totalSupply, "MaxOwnershipByCountryModule: token total supply is zero")
+            _amount.mulDiv(oneHundred, totalSupply)
         );
     }
 

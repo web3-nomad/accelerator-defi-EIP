@@ -92,6 +92,8 @@ contract AgentRoles is Ownable {
         _;
     }
 
+    constructor() Ownable(msg.sender) {}
+
     /// functions
 
     /// @dev AgentAdmin Role _agentAdmin
