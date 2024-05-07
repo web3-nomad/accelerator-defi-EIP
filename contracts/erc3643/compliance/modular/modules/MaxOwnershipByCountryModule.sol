@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../IModularCompliance.sol";
 import "../../../token/IToken.sol";
 import "./AbstractModule.sol";
@@ -12,7 +12,7 @@ import "./AbstractModule.sol";
 * This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
 */ 
 contract MaxOwnershipByCountryModule is AbstractModule {
-    using SafeMath for uint256;
+    using Math for uint256;
 
     /// state variables
     /// mapping of preset status of compliance addresses
@@ -267,13 +267,15 @@ contract MaxOwnershipByCountryModule is AbstractModule {
         IToken token = IToken(IModularCompliance(_compliance).getTokenBound());
         uint256 totalSupply = token.totalSupply();
 
+        require(totalSupply > 0, "MaxOwnershipByCountryModule: token total supply is zero");
+
         uint256 decimals = token.decimals();
 
         // percentage is set in basis point so 10000 = 100%
         uint256 oneHundred = 100 * 10 ** 2;
 
         return uint16(
-            _amount.mul(oneHundred).div(totalSupply, "MaxOwnershipByCountryModule: token total supply is zero")
+            _amount.mulDiv(oneHundred, totalSupply)
         );
     }
 

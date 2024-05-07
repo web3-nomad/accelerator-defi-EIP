@@ -4,8 +4,14 @@ pragma abicoder v2;
 
 import {ERC20} from "./ERC20.sol";
 import {IERC4626} from "./IERC4626.sol";
+
+import {FeeConfiguration} from "../common/FeeConfiguration.sol";
+
 import {FixedPointMathLib} from "./FixedPointMathLib.sol";
 import {SafeTransferLib} from "./SafeTransferLib.sol";
+
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
 import "../common/safe-HTS/SafeHTS.sol";
 import "../common/safe-HTS/IHederaTokenService.sol";
 
@@ -14,7 +20,7 @@ import "../common/safe-HTS/IHederaTokenService.sol";
  *
  * The contract which represents a custom Vault with Hedera HTS support.
  */
-contract HederaVault is IERC4626 {
+contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
     using SafeTransferLib for ERC20;
     using FixedPointMathLib for uint256;
     using Bits for uint256;
@@ -71,17 +77,24 @@ contract HederaVault is IERC4626 {
     event RewardAdded(address indexed rewardToken, uint256 amount);
 
     /**
-     * @dev Initializes contract with passed parameters
+     * @dev Initializes contract with passed parameters.
      *
-     * @param _underlying The address of the asset token
-     * @param _name The share token name
-     * @param _symbol The share token symbol
+     * @param _underlying The address of the asset token.
+     * @param _name The share token name.
+     * @param _symbol The share token symbol.
+     * @param _feeConfig The fee configuration struct.
+     * @param _vaultRewardController The Vault reward controller user.
+     * @param _feeConfigController The fee config controller user.
      */
     constructor(
         ERC20 _underlying,
         string memory _name,
-        string memory _symbol
+        string memory _symbol,
+        FeeConfig memory _feeConfig,
+        address _vaultRewardController,
+        address _feeConfigController
     ) payable ERC20(_name, _symbol, _underlying.decimals()) {
+        __FeeConfiguration_init(_feeConfig, _vaultRewardController, _feeConfigController);
         owner = msg.sender;
 
         SafeHTS.safeAssociateToken(address(_underlying), address(this));
@@ -127,7 +140,7 @@ contract HederaVault is IERC4626 {
      * @param receiver The shares receiver address.
      * @return shares The amount of shares to receive.
      */
-    function deposit(uint256 assets, address receiver) public override returns (uint256 shares) {
+    function deposit(uint256 assets, address receiver) public override nonReentrant returns (uint256 shares) {
         if ((shares = previewDeposit(assets)) == 0) revert ZeroShares(assets);
 
         asset.safeTransferFrom(msg.sender, address(this), assets);
@@ -150,10 +163,8 @@ contract HederaVault is IERC4626 {
      * @param to The receiver of tokens.
      * @return amount The amount of tokens to receive.
      */
-    function mint(uint256 shares, address to) public override returns (uint256 amount) {
+    function mint(uint256 shares, address to) public override nonReentrant returns (uint256 amount) {
         _mint(to, amount = previewMint(shares));
-
-        asset.approve(address(this), amount);
 
         assetTotalSupply += amount;
 
@@ -172,19 +183,23 @@ contract HederaVault is IERC4626 {
      * @param from The owner of shares.
      * @return shares The amount of shares to burn.
      */
-    function withdraw(uint256 amount, address receiver, address from) public override returns (uint256 shares) {
+    function withdraw(
+        uint256 amount,
+        address receiver,
+        address from
+    ) public override nonReentrant returns (uint256 shares) {
         beforeWithdraw(amount);
+
+        // _burn(from, shares = previewWithdraw(amount));
+        assetTotalSupply -= amount;
 
         SafeHTS.safeTransferToken(share, msg.sender, address(this), int64(uint64(amount)));
 
         SafeHTS.safeBurnToken(share, uint64(amount), new int64[](0));
 
-        // _burn(from, shares = previewWithdraw(amount));
-        assetTotalSupply -= amount;
+        asset.safeTransfer(receiver, amount);
 
         emit Withdraw(from, receiver, amount, shares);
-
-        asset.safeTransfer(receiver, amount);
     }
 
     /**
@@ -195,7 +210,11 @@ contract HederaVault is IERC4626 {
      * @param from The shares owner.
      * @return amount The amount of shares to burn.
      */
-    function redeem(uint256 shares, address receiver, address from) public override returns (uint256 amount) {
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address from
+    ) public override nonReentrant returns (uint256 amount) {
         require((amount = previewRedeem(shares)) != 0, "ZERO_ASSETS");
 
         amount = previewRedeem(shares);
@@ -214,33 +233,34 @@ contract HederaVault is IERC4626 {
     /**
      * @dev Updates user state according to withdraw inputs.
      *
-     * @param amount The amount of shares.
+     * @param _amount The amount of shares.
      */
-    function beforeWithdraw(uint256 amount) internal {
+    function beforeWithdraw(uint256 _amount) internal {
         // claimAllReward(0);
-        userContribution[msg.sender].sharesAmount -= amount;
-        assetTotalSupply -= amount;
+        userContribution[msg.sender].sharesAmount -= _amount;
+        assetTotalSupply -= _amount;
     }
 
     /**
      * @dev Updates user state after deposit and mint calls.
      *
-     * @param amount The amount of shares.
+     * @param _amount The amount of shares.
      */
-    function afterDeposit(uint256 amount) internal {
+    function afterDeposit(uint256 _amount) internal {
         if (!userContribution[msg.sender].exist) {
-            for (uint i; i < rewardTokens.length; i++) {
+            uint256 rewardTokensSize = rewardTokens.length;
+            for (uint256 i; i < rewardTokensSize; i++) {
                 address token = rewardTokens[i];
                 userContribution[msg.sender].lastClaimedAmountT[token] = tokensRewardInfo[token].amount;
                 SafeHTS.safeAssociateToken(token, msg.sender);
             }
-            userContribution[msg.sender].sharesAmount = amount;
+            userContribution[msg.sender].sharesAmount = _amount;
             userContribution[msg.sender].exist = true;
-            assetTotalSupply += amount;
+            assetTotalSupply += _amount;
         } else {
             claimAllReward(0);
-            userContribution[msg.sender].sharesAmount += amount;
-            assetTotalSupply += amount;
+            userContribution[msg.sender].sharesAmount += _amount;
+            assetTotalSupply += _amount;
         }
     }
 
@@ -372,10 +392,10 @@ contract HederaVault is IERC4626 {
      * @param _token The reward token address.
      * @param _amount The amount of reward token to add.
      */
-    function addReward(address _token, uint256 _amount) external payable {
-        require(_amount != 0, "Amount can't be zero");
-        require(assetTotalSupply != 0, "No token staked yet");
-        require(_token != address(asset), "Reward and Staking tokens cannot be same");
+    function addReward(address _token, uint256 _amount) external payable onlyRole(VAULT_REWARD_CONTROLLER_ROLE) {
+        require(_amount != 0, "Vault: Amount can't be zero");
+        require(assetTotalSupply != 0, "Vault: No token staked yet");
+        require(_token != address(asset) && _token != share, "Vault: Reward and Staking tokens cannot be same");
 
         uint256 perShareRewards = _amount.mulDivDown(1, assetTotalSupply);
         RewardsInfo storage rewardInfo = tokensRewardInfo[_token];
@@ -398,16 +418,27 @@ contract HederaVault is IERC4626 {
      * @param _startPosition The starting index in the reward token list from which to begin claiming rewards.
      * @return The index of the start position after the last claimed reward and the total number of reward tokens.
      */
-    function claimAllReward(uint256 _startPosition) public returns (uint256, uint256) {
-        for (uint256 i = _startPosition; i < rewardTokens.length && i < _startPosition + 10; i++) {
+    function claimAllReward(uint256 _startPosition) public payable nonReentrant returns (uint256, uint256) {
+        uint256 rewardTokensSize = rewardTokens.length;
+
+        for (uint256 i = _startPosition; i < rewardTokensSize && i < _startPosition + 10; i++) {
             uint256 reward;
             address token = rewardTokens[i];
             reward = (tokensRewardInfo[token].amount - userContribution[msg.sender].lastClaimedAmountT[token])
                 .mulDivDown(1, userContribution[msg.sender].sharesAmount);
             userContribution[msg.sender].lastClaimedAmountT[token] = tokensRewardInfo[token].amount;
-            ERC20(token).safeTransferFrom(address(this), msg.sender, reward);
+            SafeHTS.safeTransferToken(token, address(this), msg.sender, int64(uint64(reward)));
+            _deductFee(reward);
         }
-        return (_startPosition, rewardTokens.length);
+        return (_startPosition, rewardTokensSize);
+    }
+
+    function calculateReward(uint256 _id) public view returns (uint256 reward) {
+        address token = rewardTokens[_id];
+        reward = (tokensRewardInfo[token].amount - userContribution[msg.sender].lastClaimedAmountT[token]).mulDivDown(
+            1,
+            userContribution[msg.sender].sharesAmount
+        );
     }
 }
 

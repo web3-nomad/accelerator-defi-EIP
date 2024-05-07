@@ -13,7 +13,7 @@ describe('IdentityRegistry', () => {
 
       await expect(
         identityRegistry.connect(deployer).init(ethers.ZeroAddress, ethers.ZeroAddress, ethers.ZeroAddress),
-      ).to.be.revertedWith('Initializable: contract is already initialized');
+      ).to.be.revertedWithCustomError(identityRegistry, "InvalidInitialization")
     });
 
     it('should reject zero address for Trusted Issuers Registry', async () => {
@@ -105,9 +105,7 @@ describe('IdentityRegistry', () => {
           accounts: { anotherWallet },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(identityRegistry.connect(anotherWallet).setIdentityRegistryStorage(ethers.ZeroAddress)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(identityRegistry.connect(anotherWallet).setIdentityRegistryStorage(ethers.ZeroAddress)).to.be.revertedWithCustomError(identityRegistry, 'OwnableUnauthorizedAccount')
       });
     });
 
@@ -133,9 +131,7 @@ describe('IdentityRegistry', () => {
           accounts: { anotherWallet },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(identityRegistry.connect(anotherWallet).setClaimTopicsRegistry(ethers.ZeroAddress)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(identityRegistry.connect(anotherWallet).setClaimTopicsRegistry(ethers.ZeroAddress)).to.be.revertedWithCustomError(identityRegistry, 'OwnableUnauthorizedAccount')
       });
     });
 
@@ -161,9 +157,7 @@ describe('IdentityRegistry', () => {
           accounts: { anotherWallet },
         } = await loadFixture(deployFullSuiteFixture);
 
-        await expect(identityRegistry.connect(anotherWallet).setTrustedIssuersRegistry(ethers.ZeroAddress)).to.be.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(identityRegistry.connect(anotherWallet).setTrustedIssuersRegistry(ethers.ZeroAddress)).to.be.revertedWithCustomError(identityRegistry, 'OwnableUnauthorizedAccount')
       });
     });
 

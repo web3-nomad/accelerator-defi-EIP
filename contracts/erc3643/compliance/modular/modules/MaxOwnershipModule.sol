@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../IModularCompliance.sol";
 import "../../../token/IToken.sol";
 import "./AbstractModule.sol";
@@ -12,7 +12,7 @@ import "./AbstractModule.sol";
 * This module manage the token percentage (relative to the token supply) each ONCHAINID is allowed to own
 */ 
 contract MaxOwnershipModule is AbstractModule {
-    using SafeMath for uint256;
+    using Math for uint256;
 
     /// state variables
 
@@ -259,9 +259,11 @@ contract MaxOwnershipModule is AbstractModule {
         IToken token = IToken(IModularCompliance(_compliance).getTokenBound());
         uint256 totalSupply = token.totalSupply();
 
+        require(totalSupply > 0, "MaxOwnershipModule: token total supply is zero");
+
         uint256 decimals = token.decimals();
         uint256 oneHundred = 100 * 10 ** decimals;
-        
-        return _amount.mul(oneHundred).div(totalSupply, "MaxOwnershipModule: token total supply is zero");
+
+        return _amount.mulDiv(oneHundred, totalSupply);
     }
 }

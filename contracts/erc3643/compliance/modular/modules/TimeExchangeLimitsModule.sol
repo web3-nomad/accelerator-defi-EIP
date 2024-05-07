@@ -129,6 +129,8 @@ contract TimeExchangeLimitsModule is AbstractModule, Ownable {
 
     error LimitsArraySizeExceeded(address compliance, uint arraySize);
 
+    constructor() Ownable(msg.sender) {}
+
     /**
      *  @dev Sets the limit of tokens allowed to be transferred to the given exchangeID in a given period of time
      *  @param _exchangeID ONCHAINID of the exchange

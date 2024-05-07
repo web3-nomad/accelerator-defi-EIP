@@ -150,9 +150,8 @@ contract DVDTransferManager is Ownable {
         address fee2Wallet);
 
     /// functions
-
     // initiates the nonce at 0
-    constructor(){
+    constructor() Ownable(msg.sender) {
         txNonce = 0;
     }
 

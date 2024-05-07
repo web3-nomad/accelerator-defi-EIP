@@ -117,9 +117,7 @@ describe('Compliance Module: ExchangeMonthlyLimits', () => {
         const context = await loadFixture(deployExchangeMonthlyLimitsFixture);
         const exchangeID = context.accounts.anotherWallet.address;
 
-        await expect(context.contracts.complianceModule.connect(context.accounts.aliceWallet).addExchangeID(exchangeID)).to.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(context.contracts.complianceModule.connect(context.accounts.aliceWallet).addExchangeID(exchangeID)).to.be.revertedWithCustomError(context.contracts.complianceModule, 'OwnableUnauthorizedAccount')
       });
     });
 
@@ -158,9 +156,7 @@ describe('Compliance Module: ExchangeMonthlyLimits', () => {
         const context = await loadFixture(deployExchangeMonthlyLimitsFixture);
         const exchangeID = context.accounts.anotherWallet.address;
 
-        await expect(context.contracts.complianceModule.connect(context.accounts.aliceWallet).removeExchangeID(exchangeID)).to.revertedWith(
-          'Ownable: caller is not the owner',
-        );
+        await expect(context.contracts.complianceModule.connect(context.accounts.aliceWallet).removeExchangeID(exchangeID)).to.be.revertedWithCustomError(context.contracts.complianceModule, 'OwnableUnauthorizedAccount')
       });
     });
 
