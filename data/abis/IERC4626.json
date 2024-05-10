@@ -4,6 +4,11 @@
   "sourceName": "contracts/erc4626/IERC4626.sol",
   "abi": [
     {
+      "inputs": [],
+      "name": "MaxRewardTokensAmount",
+      "type": "error"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
