@@ -397,6 +397,8 @@ contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
         require(assetTotalSupply != 0, "Vault: No token staked yet");
         require(_token != address(asset) && _token != share, "Vault: Reward and Staking tokens cannot be same");
 
+        if (rewardTokens.length == 10) revert MaxRewardTokensAmount();
+
         uint256 perShareRewards = _amount.mulDivDown(1, assetTotalSupply);
         RewardsInfo storage rewardInfo = tokensRewardInfo[_token];
         if (!rewardInfo.exist) {
