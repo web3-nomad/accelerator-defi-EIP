@@ -11,6 +11,9 @@ import {FixedPointMathLib} from "./FixedPointMathLib.sol";
 import {SafeTransferLib} from "./SafeTransferLib.sol";
 
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+import {IPyth} from "@pythnetwork/pyth-sdk-solidity/IPyth.sol";
 
 import "../common/safe-HTS/SafeHTS.sol";
 import "../common/safe-HTS/IHederaTokenService.sol";
@@ -20,7 +23,7 @@ import "../common/safe-HTS/IHederaTokenService.sol";
  *
  * The contract which represents a custom Vault with Hedera HTS support.
  */
-contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
+contract HederaVault is IERC4626, FeeConfiguration, Ownable, ReentrancyGuard {
     using SafeTransferLib for ERC20;
     using FixedPointMathLib for uint256;
     using Bits for uint256;
@@ -36,9 +39,6 @@ contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
 
     // Reward tokens
     address[] public rewardTokens;
-
-    // Owner of the contract
-    address public owner;
 
     // Info by user
     mapping(address => UserInfo) public userContribution;
@@ -93,10 +93,15 @@ contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
         FeeConfig memory _feeConfig,
         address _vaultRewardController,
         address _feeConfigController
-    ) payable ERC20(_name, _symbol, _underlying.decimals()) {
+    ) payable ERC20(_name, _symbol, _underlying.decimals()) Ownable(msg.sender) {
         __FeeConfiguration_init(_feeConfig, _vaultRewardController, _feeConfigController);
-        owner = msg.sender;
 
+        asset = _underlying;
+
+        _createTokenWithContractAsOwner(_name, _symbol, _underlying);
+    }
+
+    function _createTokenWithContractAsOwner(string memory _name, string memory _symbol, ERC20 _underlying) internal {
         SafeHTS.safeAssociateToken(address(_underlying), address(this));
         uint256 supplyKeyType;
         uint256 adminKeyType;
@@ -126,7 +131,6 @@ contract HederaVault is IERC4626, FeeConfiguration, ReentrancyGuard {
         newToken.tokenKeys = keys;
         share = SafeHTS.safeCreateFungibleToken(newToken, 0, _underlying.decimals());
         emit CreatedToken(share);
-        asset = _underlying;
     }
 
     /*///////////////////////////////////////////////////////////////
