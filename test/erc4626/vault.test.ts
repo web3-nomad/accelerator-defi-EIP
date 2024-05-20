@@ -20,14 +20,14 @@ const revertCasesVaultId = "0.0.3757631";
 
 // const vaultEr = "0x8b9036f98059014a0cD062b02A88d285fd59cc68";
 
-const newStakingTokenId = "0.0.4310076";
+const newStakingTokenId = "0.0.4338257";
 const newRewardTokenId = "0.0.4310077";
-const rewardTokenAddress = "0x000000000000000000000000000000000041c43d";
+const rewardTokenAddress = "0x0000000000000000000000000000000000423252";
 const newSharesTokenAddress = "0x000000000000000000000000000000000041c440";
 const newSharesTokenId = "0.0.4310080";
 const newVaultId = "0.0.4229240";
 
-const vaultEr = "0xc272305E6cfb9dAFfe7B4375B225504F74ff231F";
+const vaultEr = "0xe95E635753a8A233cB736c5CB0dF181Bb865a90b";
 // Tests
 describe("Vault", function () {
     async function deployFixture() {
@@ -48,20 +48,20 @@ describe("Vault", function () {
 
         const erc20 = await hre.artifacts.readArtifact("contracts/erc4626/ERC20.sol:ERC20");
 
-        const sharesTokenAssociate = await new TokenAssociateTransaction()
-            .setAccountId(operatorAccountId)
-            .setTokenIds([newSharesTokenId])
-            .execute(client);
+        // const sharesTokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(operatorAccountId)
+        //     .setTokenIds([newSharesTokenId])
+        //     .execute(client);
 
-        const stakingTokenAssociate = await new TokenAssociateTransaction()
-            .setAccountId(operatorAccountId)
-            .setTokenIds([newStakingTokenId])
-            .execute(client);
+        // const stakingTokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(operatorAccountId)
+        //     .setTokenIds([newStakingTokenId])
+        //     .execute(client);
 
-        const rewardTokenAssociate = await new TokenAssociateTransaction()
-            .setAccountId(operatorAccountId)
-            .setTokenIds([newRewardTokenId])
-            .execute(client);
+        // const rewardTokenAssociate = await new TokenAssociateTransaction()
+        //     .setAccountId(operatorAccountId)
+        //     .setTokenIds([newRewardTokenId])
+        //     .execute(client);
 
         const hederaVaultRevertCases = await ethers.getContractAt(
             "HederaVault",
@@ -87,7 +87,7 @@ describe("Vault", function () {
             newSharesTokenAddress
         );
 
-        // await TokenTransfer(newStakingTokenId, operatorAccountId, stAccountId, 10, client);
+        // await TokenTransfer(newStakingTokenId, operatorAccountId, "0.0.3638358", 1000, client);
 
         // const stakingTokenOperatorBalance = await (
         //     await TokenBalance(operatorAccountId, client)
@@ -205,9 +205,9 @@ describe("Vault", function () {
     });
 
     describe("addReward", function () {
-        it("Should add reward to the Vault", async function () {
+        it.only("Should add reward to the Vault", async function () {
             const { hederaVault, rewardToken } = await deployFixture();
-            const rewardAmount = 10;
+            const rewardAmount = 100000;
 
             await rewardToken.approve(hederaVault.target, rewardAmount);
 
