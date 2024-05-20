@@ -205,7 +205,7 @@ describe("Vault", function () {
     });
 
     describe("addReward", function () {
-        it.only("Should add reward to the Vault", async function () {
+        it("Should add reward to the Vault", async function () {
             const { hederaVault, rewardToken } = await deployFixture();
             const rewardAmount = 100000;
 
