@@ -172,10 +172,20 @@ async function deployVault(contracts: Record<string, any>): Promise<Record<strin
 
   console.log("Vault deployed with address: ", await hederaVault.getAddress());
 
+  const VaultFactory = await ethers.getContractFactory("VaultFactory");
+  const vaultFactory = await VaultFactory.deploy(
+    deployer.address
+  );
+  console.log("Hash ", vaultFactory.deploymentTransaction()?.hash);
+  await vaultFactory.waitForDeployment();
+
+  console.log("Vault Factory deployed with address: ", await vaultFactory.getAddress());
+
   return {
     ...contracts,
     vault: {
       Vault: hederaVault.target,
+      VaultFactory: vaultFactory.target,
       StakingToken: stakingTokenAddress,
       Share: await hederaVault.share(),
       RewardToken: "0x" + rewardToken!.toSolidityAddress()

@@ -1,7 +1,8 @@
 import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
-import { createFungibleToken } from "../scripts/utils";
+import { createFungibleToken, TokenTransfer } from "../scripts/utils";
 import { Client, AccountId, PrivateKey } from "@hashgraph/sdk";
+import { HederaVault } from "../typechain-types";
 
 dotenv.config();
 
@@ -45,7 +46,7 @@ async function main() {
 
   const feeConfig = {
     receiver: "0x091b4a7ea614a3bd536f9b62ad5641829a1b174f",
-    token: "0x" + rewardToken!.toSolidityAddress(),
+    token: "0x" + stakingToken!.toSolidityAddress(),
     minAmount: 0,
     feePercentage: 1000,
   };
@@ -58,12 +59,22 @@ async function main() {
     feeConfig,
     deployer.address,
     deployer.address,
+    // deployer.address,
     { from: deployer.address, gasLimit: 3000000, value: ethers.parseUnits("12", 18) }
   );
   console.log("Hash ", hederaVault.deploymentTransaction()?.hash);
   await hederaVault.waitForDeployment();
 
   console.log("Vault deployed with address: ", await hederaVault.getAddress());
+
+  const VaultFactory = await ethers.getContractFactory("VaultFactory");
+  const vaultFactory = await VaultFactory.deploy(
+    deployer.address
+  );
+  console.log("Hash ", vaultFactory.deploymentTransaction()?.hash);
+  await vaultFactory.waitForDeployment();
+
+  console.log("Vault Factory deployed with address: ", await vaultFactory.getAddress());
 }
 
 main().catch((error) => {
