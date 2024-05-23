@@ -24,10 +24,8 @@ contract VaultFactory is Ownable, IVaultFactory, ERC165 {
 
     /**
      * @dev Initializes contract with passed parameters.
-     *
-     * @param deployer The address of Vault deployer.
      */
-    constructor(address deployer) Ownable(msg.sender) {}
+    constructor() Ownable(msg.sender) {}
 
     /**
      * @dev Deploys a Vault using CREATE2 opcode.

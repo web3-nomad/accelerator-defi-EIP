@@ -68,9 +68,7 @@ async function main() {
   console.log("Vault deployed with address: ", await hederaVault.getAddress());
 
   const VaultFactory = await ethers.getContractFactory("VaultFactory");
-  const vaultFactory = await VaultFactory.deploy(
-    deployer.address
-  );
+  const vaultFactory = await VaultFactory.deploy();
   console.log("Hash ", vaultFactory.deploymentTransaction()?.hash);
   await vaultFactory.waitForDeployment();
 
