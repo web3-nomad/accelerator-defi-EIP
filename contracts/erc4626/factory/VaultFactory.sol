@@ -2,7 +2,6 @@
 pragma solidity 0.8.24;
 
 import {ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {IVaultFactory} from "./IVaultFactory.sol";
@@ -16,10 +15,7 @@ import {IOwnable} from "./IOwnable.sol";
  * The contract which allows to deploy Vaults with different parameters
  * and track contract addresses.
  */
-contract VaultFactory is Ownable, IVaultFactory, ERC165, AccessControl {
-    // Deployer role hash
-    bytes32 public constant DEPLOYER_ROLE = keccak256("DEPLOYER_ROLE");
-
+contract VaultFactory is Ownable, IVaultFactory, ERC165 {
     // Available Vaults
     mapping(address vault => bool) public availableVaults;
 
@@ -31,12 +27,7 @@ contract VaultFactory is Ownable, IVaultFactory, ERC165, AccessControl {
      *
      * @param deployer The address of Vault deployer.
      */
-    constructor(address deployer) Ownable(msg.sender) {
-        require(deployer != address(0), "Invalid deployer");
-
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(DEPLOYER_ROLE, deployer);
-    }
+    constructor(address deployer) Ownable(msg.sender) {}
 
     /**
      * @dev Deploys a Vault using CREATE2 opcode.
@@ -51,7 +42,7 @@ contract VaultFactory is Ownable, IVaultFactory, ERC165, AccessControl {
         string calldata salt,
         VaultDetails calldata vaultDetails,
         FeeConfiguration.FeeConfig calldata feeConfig
-    ) external payable onlyRole(DEPLOYER_ROLE) returns (address vault) {
+    ) external payable returns (address vault) {
         require(vaultDeployed[salt] == address(0), "Vault already deployed");
         require(vaultDetails.stakingToken != address(0), "Invalid staking token");
         require(vaultDetails.vaultRewardController != address(0), "Invalid reward controller address");
@@ -124,7 +115,7 @@ contract VaultFactory is Ownable, IVaultFactory, ERC165, AccessControl {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, ERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
         return interfaceId == type(IVaultFactory).interfaceId || super.supportsInterface(interfaceId);
     }
 }
