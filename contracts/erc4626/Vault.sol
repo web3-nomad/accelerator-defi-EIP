@@ -273,6 +273,15 @@ contract HederaVault is IERC4626, FeeConfiguration, Ownable, ReentrancyGuard {
     //////////////////////////////////////////////////////////////*/
 
     /**
+     * @dev Returns reward tokens addresses.
+     *
+     * @return Reward tokens.
+     */
+    function getRewardTokens() public view returns (address[] memory) {
+        return rewardTokens;
+    }
+
+    /**
      * @dev Returns amount of assets on the contract balance.
      *
      * @return Asset balance of this contract.
@@ -424,7 +433,7 @@ contract HederaVault is IERC4626, FeeConfiguration, Ownable, ReentrancyGuard {
      * @param _startPosition The starting index in the reward token list from which to begin claiming rewards.
      * @return The index of the start position after the last claimed reward and the total number of reward tokens.
      */
-    function claimAllReward(uint256 _startPosition) public payable nonReentrant returns (uint256, uint256) {
+    function claimAllReward(uint256 _startPosition) public payable returns (uint256, uint256) {
         uint256 rewardTokensSize = rewardTokens.length;
 
         for (uint256 i = _startPosition; i < rewardTokensSize && i < _startPosition + 10; i++) {
