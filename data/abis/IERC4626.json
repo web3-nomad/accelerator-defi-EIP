@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IERC4626",
-  "sourceName": "contracts/erc4626/IERC4626.sol",
+  "sourceName": "contracts/erc4626/interfaces/IERC4626.sol",
   "abi": [
     {
       "inputs": [],
